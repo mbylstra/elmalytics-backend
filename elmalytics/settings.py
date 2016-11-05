@@ -151,10 +151,15 @@ class LocalSettings(BaseSettings):
     DEBUG = True
 
 class StagingSettings(BaseSettings):
+
+    @cbs.env
+    def SECRET_KEY(self):
+        pass
+
     DEBUG = False
 
 class ProductionSettings(StagingSettings):
-    DEBUG = False
+    pass
 
 
 MODE = os.environ.get('DJANGO_MODE', 'Local')
