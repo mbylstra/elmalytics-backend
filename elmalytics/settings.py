@@ -156,6 +156,10 @@ class StagingSettings(BaseSettings):
     def SECRET_KEY(self):
         pass
 
+    @cbs.env
+    def STATIC_ROOT(self):
+        pass
+
     DEBUG = False
 
 class ProductionSettings(StagingSettings):
