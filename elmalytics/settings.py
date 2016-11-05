@@ -33,7 +33,6 @@ class BaseSettings():
     # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 
-
     ALLOWED_HOSTS = []
 
 
@@ -152,9 +151,14 @@ class LocalSettings(BaseSettings):
 
 class StagingSettings(BaseSettings):
 
+
     @cbs.env
     def SECRET_KEY(self):
         pass
+
+    @cbs.env()
+    def ALLOWED_HOSTS(self):
+        return []
 
     @cbs.env
     def STATIC_ROOT(self):
