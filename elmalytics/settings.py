@@ -10,105 +10,152 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
-from local_settings import *
+# from settings_local import *
 
+
+import cbs
 import os
+import dotenv
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+ENVIRONMENT_PATH = os.path.dirname(BASE_DIR)
+DOTENV_FILE_PATH = os.path.join(ENVIRONMENT_PATH, "django.env")
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
+dotenv.read_dotenv(dotenv=DOTENV_FILE_PATH)
+
+class BaseSettings():
+    DEBUG = True
+
+
+    # Quick-start development settings - unsuitable for production
+    # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 
 
-ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = []
 
 
-# Application definition
+    # Application definition
 
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'wham',
-    'wham.apis.github',
-]
+    INSTALLED_APPS = [
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+        # 'wham',
+        # 'wham.apis.github',
+        'github',
+    ]
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+    MIDDLEWARE = [
+        'django.middleware.security.SecurityMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    ]
 
-ROOT_URLCONF = 'elmalytics.urls'
+    ROOT_URLCONF = 'elmalytics.urls'
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
+    TEMPLATES = [
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': [],
+            'APP_DIRS': True,
+            'OPTIONS': {
+                'context_processors': [
+                    'django.template.context_processors.debug',
+                    'django.template.context_processors.request',
+                    'django.contrib.auth.context_processors.auth',
+                    'django.contrib.messages.context_processors.messages',
+                ],
+            },
         },
-    },
-]
+    ]
 
-WSGI_APPLICATION = 'elmalytics.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
+    WSGI_APPLICATION = 'elmalytics.wsgi.application'
 
 
-
-# Password validation
-# https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+    # Database
+    # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+    # Password validation
+    # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
-TIME_ZONE = 'UTC'
+    AUTH_PASSWORD_VALIDATORS = [
+        {
+            'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        },
+        {
+            'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        },
+        {
+            'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        },
+        {
+            'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        },
+    ]
 
-USE_I18N = True
 
-USE_L10N = True
+    # Internationalization
+    # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-USE_TZ = True
+    LANGUAGE_CODE = 'en-us'
+
+    TIME_ZONE = 'UTC'
+
+    USE_I18N = True
+
+    USE_L10N = True
+
+    USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.10/howto/static-files/
+    # Static files (CSS, JavaScript, Images)
+    # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATIC_URL = '/static/'
+    STATIC_URL = '/static/'
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ['DATABASE_NAME'],
+            'USER': os.environ['DATABASE_USER'],
+            'PASSWORD': os.environ['DATABASE_PASSWORD'],
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+        }
+    }
+
+    GITHUB_CREDENTIALS = {
+        'client_id': os.environ['GITHUB_CLIENT_ID'],
+        'client_secret': os.environ['GITHUB_CLIENT_SECRET'],
+    }
+
+
+class LocalSettings(BaseSettings):
+
+    @cbs.env
+    def SECRET_KEY(self):
+        return 'dummy_secret_key'
+
+    DEBUG = True
+
+class StagingSettings(BaseSettings):
+    DEBUG = False
+
+class ProductionSettings(StagingSettings):
+    DEBUG = False
+
+
+MODE = os.environ.get('DJANGO_MODE', 'Local')
+cbs.apply('{}Settings'.format(MODE.title()), globals())
