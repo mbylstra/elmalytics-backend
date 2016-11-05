@@ -21,7 +21,7 @@ import dotenv
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 ENVIRONMENT_PATH = os.path.dirname(BASE_DIR)
-DOTENV_FILE_PATH = os.path.join(ENVIRONMENT_PATH, "django.env")
+DOTENV_FILE_PATH = os.path.join(ENVIRONMENT_PATH, "django_environment_variables")
 
 dotenv.read_dotenv(dotenv=DOTENV_FILE_PATH)
 
