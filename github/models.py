@@ -89,6 +89,7 @@ class Repository(models.Model):
         return self.name
 
     def fetch_newest_commits(self):
+        print 'Fetching newest commits for {}'.format(self)
         owner_login = self.owner.login
         actual_newest_commit_time = self.get_time_of_newest_commit()
         if actual_newest_commit_time:
@@ -103,6 +104,7 @@ class Repository(models.Model):
             total_added += len(items)
             for item in items:
                 Commit.objects.update_or_create_from_data(item, self)
+        print '{} commits added'.format(total_added)
         return total_added
 
     def get_newest_commit(self):
