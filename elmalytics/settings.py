@@ -18,6 +18,8 @@ import os
 import dotenv
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from cbs.utils import as_list
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 ENVIRONMENT_PATH = os.path.dirname(BASE_DIR)
@@ -33,8 +35,9 @@ class BaseSettings():
     # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 
-    ALLOWED_HOSTS = []
-
+    @cbs.env(type=as_list)
+    def ALLOWED_HOSTS(self):
+        return []
 
     # Application definition
 
@@ -156,7 +159,7 @@ class StagingSettings(BaseSettings):
     def SECRET_KEY(self):
         pass
 
-    @cbs.env()
+    @cbs.env(type=as_list)
     def ALLOWED_HOSTS(self):
         return []
 
