@@ -1,0 +1,19 @@
+{
+  "name": "elmalytics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@panosoft/elm-native-helpers": "^0.1.6",
+    "dotenv": "^2.0.0",
+    "jsonfile": "^2.4.0",
+    "pg": "^6.1.0",
+    "pg-query-stream": "^1.0.0",
+    "stream-read": "^1.1.2"
+  }
+}
