@@ -9084,7 +9084,7 @@ var _user$project$Decoders$totalReposCreatedRowTupleDecoder = A4(
 	A2(_elm_lang$core$Json_Decode_ops[':='], 'month', _elm_lang$core$Json_Decode$string),
 	A2(
 		_elm_lang$core$Json_Decode_ops[':='],
-		'total_repos_created',
+		'total',
 		A2(
 			_elm_lang$core$Json_Decode$map,
 			function (_p0) {
@@ -9104,7 +9104,7 @@ var _user$project$Decoders$totalReposCreatedRowDecoder = A4(
 	_user$project$Decoders$TotalReposCreatedRow,
 	A2(_elm_lang$core$Json_Decode_ops[':='], 'year', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode_ops[':='], 'month', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'total_repos_created', _elm_lang$core$Json_Decode$int));
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'total', _elm_lang$core$Json_Decode$int));
 var _user$project$Decoders$NiceOutput = F2(
 	function (a, b) {
 		return {labels: a, data: b};
@@ -9888,6 +9888,54 @@ var _user$project$SqlBuilder$Second = {ctor: 'Second'};
 var _user$project$SqlBuilder$Milliseconds = {ctor: 'Milliseconds'};
 var _user$project$SqlBuilder$Microseconds = {ctor: 'Microseconds'};
 
+var _user$project$Queries$numCommitsPerMonth = A3(
+	_user$project$SqlBuilder$sortByColumn,
+	'date_month',
+	_user$project$SqlBuilder_AST$Ascending,
+	A2(
+		_user$project$SqlBuilder$groupByColumn,
+		'date_month',
+		A2(
+			_user$project$SqlBuilder$fromTable,
+			'github_commit',
+			_user$project$SqlBuilder$select(
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(_user$project$SqlBuilder$asColumn, 'num_commits', _user$project$SqlBuilder$countStar),
+						A2(
+						_user$project$SqlBuilder$asColumn,
+						'date_month',
+						A2(
+							_user$project$SqlBuilder$withPrecision,
+							_user$project$SqlBuilder$Month,
+							_user$project$SqlBuilder$column('date')))
+					])))));
+var _user$project$Queries$formattedNumCommitsPerMonth = A3(
+	_user$project$SqlBuilder$fromSelect,
+	_user$project$Queries$numCommitsPerMonth,
+	'unformatted_num_commits_per_month',
+	_user$project$SqlBuilder$select(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_user$project$SqlBuilder$asColumn,
+				'year',
+				A2(
+					_user$project$SqlBuilder$formatDate,
+					'YYYY',
+					_user$project$SqlBuilder$column('date_month'))),
+				A2(
+				_user$project$SqlBuilder$asColumn,
+				'month',
+				A2(
+					_user$project$SqlBuilder$formatDate,
+					'Mon',
+					_user$project$SqlBuilder$column('date_month'))),
+				A2(
+				_user$project$SqlBuilder$asColumn,
+				'total',
+				_user$project$SqlBuilder$column('num_commits'))
+			])));
 var _user$project$Queries$numReposCreatedPerMonth = A3(
 	_user$project$SqlBuilder$sortByColumn,
 	'created_at_month',
@@ -9931,7 +9979,10 @@ var _user$project$Queries$formattedNumReposCreatedPerMonth = A3(
 					_user$project$SqlBuilder$formatDate,
 					'Mon',
 					_user$project$SqlBuilder$column('created_at_month'))),
-				_user$project$SqlBuilder$column('total_repos_created')
+				A2(
+				_user$project$SqlBuilder$asColumn,
+				'total',
+				_user$project$SqlBuilder$column('total_repos_created'))
 			])));
 
 var _user$project$Project$subscriptions = function (model) {
@@ -9944,6 +9995,24 @@ var _user$project$Project$view = function (model) {
 			[]),
 		_elm_lang$core$Native_List.fromArray(
 			[]));
+};
+var _user$project$Project$queryNameToSqlSelect = function (queryName) {
+	var _p0 = queryName;
+	switch (_p0) {
+		case 'formattedNumReposCreatedPerMonth':
+			return _user$project$Queries$formattedNumReposCreatedPerMonth;
+		case 'formattedNumCommitsPerMonth':
+			return _user$project$Queries$formattedNumCommitsPerMonth;
+		default:
+			return _elm_lang$core$Native_Utils.crashCase(
+				'Project',
+				{
+					start: {line: 63, column: 3},
+					end: {line: 69, column: 64}
+				},
+				_p0)(
+				A2(_elm_lang$core$Basics_ops['++'], 'There is no SQL query named ', queryName));
+	}
 };
 var _user$project$Project$exitNode = _elm_lang$core$Native_Platform.outgoingPort(
 	'exitNode',
@@ -9958,9 +10027,9 @@ var _user$project$Project$dataGenerated = _elm_lang$core$Native_Platform.outgoin
 				return [v._0, v._1, v._2];
 			});
 	});
-var _user$project$Project$Flags = F5(
-	function (a, b, c, d, e) {
-		return {host: a, port_: b, database: c, user: d, password: e};
+var _user$project$Project$Flags = F6(
+	function (a, b, c, d, e, f) {
+		return {host: a, port_: b, database: c, user: d, password: e, queryName: f};
 	});
 var _user$project$Project$Query = function (a) {
 	return {ctor: 'Query', _0: a};
@@ -9976,8 +10045,8 @@ var _user$project$Project$PostgresError = function (a) {
 };
 var _user$project$Project$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -9985,10 +10054,12 @@ var _user$project$Project$update = F2(
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			case 'Connect':
-				var _p1 = _p0._0;
-				var queryString = _user$project$SqlBuilder_SQLRenderer$renderSimpleSelect(_user$project$Queries$formattedNumReposCreatedPerMonth);
-				var queryCmd = A5(_panosoft$elm_postgres$Postgres$query, _user$project$Project$PostgresError, _user$project$Project$Query, _p1, queryString, 1000);
-				var l = A2(_elm_lang$core$Debug$log, 'Connect', _p1);
+				var _p3 = _p2._0;
+				var queryName = model;
+				var select = _user$project$Project$queryNameToSqlSelect(queryName);
+				var queryString = _user$project$SqlBuilder_SQLRenderer$renderSimpleSelect(select);
+				var queryCmd = A5(_panosoft$elm_postgres$Postgres$query, _user$project$Project$PostgresError, _user$project$Project$Query, _p3, queryString, 1000);
+				var l = A2(_elm_lang$core$Debug$log, 'Connect', _p3);
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
@@ -9998,7 +10069,7 @@ var _user$project$Project$update = F2(
 				var l = A2(
 					_elm_lang$core$Debug$log,
 					'ConnectError',
-					{ctor: '_Tuple2', _0: _p0._0._0, _1: _p0._0._1});
+					{ctor: '_Tuple2', _0: _p2._0._0, _1: _p2._0._1});
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
@@ -10008,14 +10079,14 @@ var _user$project$Project$update = F2(
 				var l = A2(
 					_elm_lang$core$Debug$log,
 					'ConnectionLostError',
-					{ctor: '_Tuple2', _0: _p0._0._0, _1: _p0._0._1});
+					{ctor: '_Tuple2', _0: _p2._0._0, _1: _p2._0._1});
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			case 'Disconnect':
-				var l = A2(_elm_lang$core$Debug$log, 'Disconnect', _p0._0);
+				var l = A2(_elm_lang$core$Debug$log, 'Disconnect', _p2._0);
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
@@ -10024,12 +10095,24 @@ var _user$project$Project$update = F2(
 			default:
 				var decodedResults = A2(
 					_elm_lang$core$List$map,
-					_elm_lang$core$Result$withDefault(
-						{ctor: '_Tuple3', _0: '', _1: '', _2: 0}),
+					function (rowResult) {
+						var _p4 = rowResult;
+						if (_p4.ctor === 'Ok') {
+							return _p4._0;
+						} else {
+							return _elm_lang$core$Native_Utils.crashCase(
+								'Project',
+								{
+									start: {line: 125, column: 21},
+									end: {line: 127, column: 49}
+								},
+								_p4)(_p4._0);
+						}
+					},
 					A2(
 						_elm_lang$core$List$map,
 						_elm_lang$core$Json_Decode$decodeString(_user$project$Decoders$totalReposCreatedRowTupleDecoder),
-						_p0._0._1));
+						_p2._0._1));
 				var l = A2(_elm_lang$core$Debug$log, 'Query results fetched', true);
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10047,7 +10130,7 @@ var _user$project$Project$init = function (flags) {
 	var connectCmd = A8(_panosoft$elm_postgres$Postgres$connect, _user$project$Project$PostgresError, _user$project$Project$Connect, _user$project$Project$ConnectionLostError, flags.host, flags.port_, flags.database, flags.user, flags.password);
 	return A2(
 		_elm_lang$core$Platform_Cmd_ops['!'],
-		{ctor: '_Tuple0'},
+		flags.queryName,
 		_elm_lang$core$Native_List.fromArray(
 			[connectCmd]));
 };
@@ -10072,10 +10155,15 @@ var _user$project$Project$main = {
 								function (port_) {
 									return A2(
 										_elm_lang$core$Json_Decode$andThen,
-										A2(_elm_lang$core$Json_Decode_ops[':='], 'user', _elm_lang$core$Json_Decode$string),
-										function (user) {
-											return _elm_lang$core$Json_Decode$succeed(
-												{database: database, host: host, password: password, port_: port_, user: user});
+										A2(_elm_lang$core$Json_Decode_ops[':='], 'queryName', _elm_lang$core$Json_Decode$string),
+										function (queryName) {
+											return A2(
+												_elm_lang$core$Json_Decode$andThen,
+												A2(_elm_lang$core$Json_Decode_ops[':='], 'user', _elm_lang$core$Json_Decode$string),
+												function (user) {
+													return _elm_lang$core$Json_Decode$succeed(
+														{database: database, host: host, password: password, port_: port_, queryName: queryName, user: user});
+												});
 										});
 								});
 						});

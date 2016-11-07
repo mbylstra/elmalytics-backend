@@ -5,6 +5,7 @@ import Json.Decode as Decode exposing (Decoder, object3, (:=), string, int, list
 import String exposing (toInt)
 import Result
 
+
 type alias TotalReposCreatedRow =
   { year: String
   , month : String
@@ -19,14 +20,14 @@ totalReposCreatedRowDecoder =
     object3 TotalReposCreatedRow
       ("year" := string)
       ("month" := string)
-      ("total_repos_created" := int)
+      ("total" := int)
 
 totalReposCreatedRowTupleDecoder : Decoder TotalReposCreatedRowTuple
 totalReposCreatedRowTupleDecoder =
     object3 (,,)
       ("year" := string)
       ("month" := string)
-      ("total_repos_created" := map (toInt >> Result.withDefault 0) string)
+      ("total" := map (toInt >> Result.withDefault 0) string)
 
 totalReposCreatedDecoder : Decoder (List TotalReposCreatedRowTuple)
 totalReposCreatedDecoder =

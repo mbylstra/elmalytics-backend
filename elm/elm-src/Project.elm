@@ -9,8 +9,12 @@ import Json.Decode exposing (decodeString)
 import Postgres exposing (connect, disconnect, query, moreQueryResults, executeSQL)
 
 import SqlBuilder.SQLRenderer exposing (..)
+import SqlBuilder.AST exposing (SimpleSelect)
 
-import Queries exposing (formattedNumReposCreatedPerMonth)
+import Queries exposing
+  ( formattedNumReposCreatedPerMonth
+  , formattedNumCommitsPerMonth
+  )
 import Decoders exposing (totalReposCreatedRowTupleDecoder)
 
 type alias Flags =
@@ -19,11 +23,12 @@ type alias Flags =
   , database: String
   , user: String
   , password: String
+  , queryName: String
   }
 
 -- MODEL
 
-type alias Model = ()
+type alias Model = String -- the queryname
 
 init : Flags -> (Model, Cmd Msg)
 init flags =
@@ -39,7 +44,7 @@ init flags =
         flags.user
         flags.password
   in
-    () ! [ connectCmd ]
+    flags.queryName ! [ connectCmd ]
 
 -- UPDATE
 
@@ -51,6 +56,18 @@ type Msg
   | Disconnect Int
   | Query (Int, List String)
 
+
+
+queryNameToSqlSelect : String -> SimpleSelect
+queryNameToSqlSelect queryName =
+  case queryName of
+    "formattedNumReposCreatedPerMonth" ->
+      formattedNumReposCreatedPerMonth
+    "formattedNumCommitsPerMonth" ->
+      formattedNumCommitsPerMonth
+    _ ->
+      Debug.crash ("There is no SQL query named " ++ queryName)
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
@@ -61,9 +78,9 @@ update msg model =
         let
             l =
               Debug.log "Connect" connectionId
-            queryString = renderSimpleSelect formattedNumReposCreatedPerMonth
-
-
+            queryName = model
+            select = queryNameToSqlSelect queryName
+            queryString = renderSimpleSelect select
             queryCmd =
               query
                 PostgresError
@@ -95,7 +112,7 @@ update msg model =
         in
             model ! []
 
-    Query ( connectionId, results) ->
+    Query ( connectionId, results ) ->
         let
             l =
                 Debug.log "Query results fetched" True
@@ -103,7 +120,12 @@ update msg model =
             decodedResults =
               results
               |> List.map (decodeString totalReposCreatedRowTupleDecoder)
-              |> List.map (Result.withDefault ("", "", 0))
+              |> List.map
+                  (\rowResult ->
+                    case rowResult of
+                      Ok result-> result
+                      Err msg -> Debug.crash msg
+                  )
         in
             -- model ! [ exitNode 1 ]
             model ! [ dataGenerated decodedResults ]

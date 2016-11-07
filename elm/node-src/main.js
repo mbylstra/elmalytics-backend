@@ -1,11 +1,15 @@
 // compile YourApp.elm with:
 //		elm make YourApp.elm --output elm.js
 
-var jsonfile = require('jsonfile');
+const jsonfile = require('jsonfile');
+const argv = require('minimist')(process.argv.slice(2));
+const path = require('path');
 
 require('dotenv').config({path: '../../../node.env'});
 
-
+const queryName = argv['queryName'];
+const jsonDirPath = process.env.JSON_DIR_PATH;
+console.log('jsonDirPath', jsonDirPath);
 
 // load Elm module
 const elm = require('./elm.js');
@@ -16,6 +20,7 @@ const worker = elm.Project.worker({
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
+    queryName: queryName,
 });
 
 // get Elm ports
@@ -30,8 +35,9 @@ ports.exitNode.subscribe(exitCode => {
 });
 
 ports.dataGenerated.subscribe(results => {
-  var filePath = process.env.JSON_FILE_PATH;
+  var filePath = path.resolve(jsonDirPath, queryName + ".json");
   jsonfile.writeFileSync(filePath, results, {spaces: 4});
+  console.log(`${filePath} written`);
 	process.exit(1);
 });
 
