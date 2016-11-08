@@ -60,6 +60,7 @@ class RepositoryManager(models.Manager):
                     'created_at': item['created_at'],
                     'updated_at': item['updated_at'],
                     'pushed_at': item['pushed_at'],
+                    'stargazers_count': item['stargazers_count'],
                 },
             )
 
@@ -82,6 +83,7 @@ class Repository(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     pushed_at = models.DateTimeField()
+    stargazers_count = models.IntegerField()
 
     objects = RepositoryManager()
 
