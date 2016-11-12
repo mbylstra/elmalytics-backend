@@ -9086,6 +9086,25 @@ var _panosoft$elm_postgres$Postgres$onEffects = F4(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Postgres'] = {pkg: 'panosoft/elm-postgres', init: _panosoft$elm_postgres$Postgres$init, onEffects: _panosoft$elm_postgres$Postgres$onEffects, onSelfMsg: _panosoft$elm_postgres$Postgres$onSelfMsg, tag: 'fx', cmdMap: _panosoft$elm_postgres$Postgres$cmdMap, subMap: _panosoft$elm_postgres$Postgres$subMap};
 
+var _user$project$Decoders$mostStarsForReposRowDecoder = A3(
+	_elm_lang$core$Json_Decode$object2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'user_login', _elm_lang$core$Json_Decode$string),
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'total_stars',
+		A2(
+			_elm_lang$core$Json_Decode$map,
+			function (_p0) {
+				return A2(
+					_elm_lang$core$Result$withDefault,
+					0,
+					_elm_lang$core$String$toInt(_p0));
+			},
+			_elm_lang$core$Json_Decode$string)));
 var _user$project$Decoders$mostReposCreatedRowDecoder = A3(
 	_elm_lang$core$Json_Decode$object2,
 	F2(
@@ -9098,11 +9117,11 @@ var _user$project$Decoders$mostReposCreatedRowDecoder = A3(
 		'total_repos',
 		A2(
 			_elm_lang$core$Json_Decode$map,
-			function (_p0) {
+			function (_p1) {
 				return A2(
 					_elm_lang$core$Result$withDefault,
 					0,
-					_elm_lang$core$String$toInt(_p0));
+					_elm_lang$core$String$toInt(_p1));
 			},
 			_elm_lang$core$Json_Decode$string)));
 var _user$project$Decoders$mostStarredReposRowDecoder = A4(
@@ -9127,11 +9146,11 @@ var _user$project$Decoders$totalReposCreatedRowTupleDecoder = A4(
 		'total',
 		A2(
 			_elm_lang$core$Json_Decode$map,
-			function (_p1) {
+			function (_p2) {
 				return A2(
 					_elm_lang$core$Result$withDefault,
 					0,
-					_elm_lang$core$String$toInt(_p1));
+					_elm_lang$core$String$toInt(_p2));
 			},
 			_elm_lang$core$Json_Decode$string)));
 
@@ -9957,6 +9976,40 @@ var _user$project$SqlBuilder$Second = {ctor: 'Second'};
 var _user$project$SqlBuilder$Milliseconds = {ctor: 'Milliseconds'};
 var _user$project$SqlBuilder$Microseconds = {ctor: 'Microseconds'};
 
+var _user$project$Queries$mostStarsForRepos = A2(
+	_user$project$SqlBuilder$limit,
+	50,
+	A3(
+		_user$project$SqlBuilder$sortByColumn,
+		'total_stars',
+		_user$project$SqlBuilder_AST$Descending,
+		A2(
+			_user$project$SqlBuilder$groupByColumn,
+			'github_user.login',
+			A2(
+				_user$project$SqlBuilder$from,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A4(
+						_user$project$SqlBuilder$innerJoinTable,
+						'github_user',
+						_user$project$SqlBuilder$on,
+						_user$project$SqlBuilder$equalColumns(
+							{ctor: '_Tuple2', _0: 'github_repository.owner_id', _1: 'github_user.id'}),
+						_user$project$SqlBuilder$table('github_repository'))
+					]),
+				_user$project$SqlBuilder$select(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_user$project$SqlBuilder$asColumn,
+							'user_login',
+							_user$project$SqlBuilder$column('github_user.login')),
+							A2(
+							_user$project$SqlBuilder$asColumn,
+							'total_stars',
+							_user$project$SqlBuilder$sum('github_repository.stargazers_count'))
+						]))))));
 var _user$project$Queries$mostReposCreated = A2(
 	_user$project$SqlBuilder$limit,
 	50,
@@ -10145,8 +10198,8 @@ var _user$project$Project$filterDecodeErrors = function (rows) {
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Project',
 					{
-						start: {line: 153, column: 9},
-						end: {line: 155, column: 37}
+						start: {line: 159, column: 9},
+						end: {line: 161, column: 37}
 					},
 					_p0)(_p0._0);
 			}
@@ -10164,12 +10217,14 @@ var _user$project$Project$queryNameToSqlSelect = function (queryName) {
 			return _user$project$Queries$mostStarredRepos;
 		case 'mostReposCreated':
 			return _user$project$Queries$mostReposCreated;
+		case 'mostStarsForRepos':
+			return _user$project$Queries$mostStarsForRepos;
 		default:
 			return _elm_lang$core$Native_Utils.crashCase(
 				'Project',
 				{
-					start: {line: 78, column: 3},
-					end: {line: 88, column: 64}
+					start: {line: 80, column: 3},
+					end: {line: 92, column: 64}
 				},
 				_p2)(
 				A2(_elm_lang$core$Basics_ops['++'], 'There is no SQL query named ', queryName));
@@ -10249,6 +10304,29 @@ var _user$project$Project$handleMostReposCreated = F2(
 							results)))
 				]));
 	});
+var _user$project$Project$mostStarsForReposGenerated = _elm_lang$core$Native_Platform.outgoingPort(
+	'mostStarsForReposGenerated',
+	function (v) {
+		return _elm_lang$core$Native_List.toArray(v).map(
+			function (v) {
+				return [v._0, v._1];
+			});
+	});
+var _user$project$Project$handleMostStarsForRepos = F2(
+	function (model, results) {
+		return A2(
+			_elm_lang$core$Platform_Cmd_ops['!'],
+			model,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_user$project$Project$mostStarsForReposGenerated(
+					_user$project$Project$filterDecodeErrors(
+						A2(
+							_elm_lang$core$List$map,
+							_elm_lang$core$Json_Decode$decodeString(_user$project$Decoders$mostStarsForReposRowDecoder),
+							results)))
+				]));
+	});
 var _user$project$Project$Flags = F6(
 	function (a, b, c, d, e, f) {
 		return {host: a, port_: b, database: c, user: d, password: e, queryName: f};
@@ -10306,8 +10384,8 @@ var _user$project$Project$update = F2(
 					_elm_lang$core$Native_Utils.crash(
 						'Project',
 						{
-							start: {line: 123, column: 17},
-							end: {line: 123, column: 28}
+							start: {line: 127, column: 17},
+							end: {line: 127, column: 28}
 						}),
 					'PostgresError',
 					{ctor: '_Tuple2', _0: _p4._0._0, _1: _p4._0._1});
@@ -10335,12 +10413,14 @@ var _user$project$Project$update = F2(
 						return A2(_user$project$Project$handleMostStarredRepos, model, _p8);
 					case 'mostReposCreated':
 						return A2(_user$project$Project$handleMostReposCreated, model, _p8);
+					case 'mostStarsForRepos':
+						return A2(_user$project$Project$handleMostStarsForRepos, model, _p8);
 					default:
 						return _elm_lang$core$Native_Utils.crashCase(
 							'Project',
 							{
-								start: {line: 135, column: 7},
-								end: {line: 145, column: 51}
+								start: {line: 139, column: 7},
+								end: {line: 151, column: 51}
 							},
 							_p6)(
 							A2(_elm_lang$core$Basics_ops['++'], 'no query named ', model));

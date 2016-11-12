@@ -77,3 +77,18 @@ mostReposCreated =
   |> groupByColumn "github_user.login"
   |> sortByColumn "total_repos" Descending
   |> limit 50
+
+mostStarsForRepos : SimpleSelect
+mostStarsForRepos =
+  select
+    [ column "github_user.login" |> asColumn "user_login"
+    , sum "github_repository.stargazers_count" |> asColumn "total_stars"
+    ]
+  |> from
+    [ table "github_repository"
+      |> innerJoinTable "github_user"
+         on (equalColumns ("github_repository.owner_id", "github_user.id"))
+    ]
+  |> groupByColumn "github_user.login"
+  |> sortByColumn "total_stars" Descending
+  |> limit 50

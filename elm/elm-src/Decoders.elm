@@ -50,6 +50,12 @@ mostReposCreatedRowDecoder =
       ("user_login" := string)
       ("total_repos" := map (toInt >> Result.withDefault 0) string)
 
+mostStarsForReposRowDecoder : Decoder (String, Int)
+mostStarsForReposRowDecoder =
+    object2 (,)
+      ("user_login" := string)
+      ("total_stars" := map (toInt >> Result.withDefault 0) string)
+
 -- Remember that a big problem with lists in Elm is they can only contain
 -- one type! So, for each column you need a list, rather than a list for each
 -- row.

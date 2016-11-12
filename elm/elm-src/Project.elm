@@ -16,11 +16,13 @@ import Queries exposing
   , formattedNumCommitsPerMonth
   , mostStarredRepos
   , mostReposCreated
+  , mostStarsForRepos
   )
 import Decoders exposing
   ( totalReposCreatedRowTupleDecoder
   , mostStarredReposRowDecoder
   , mostReposCreatedRowDecoder
+  , mostStarsForReposRowDecoder
   )
 
 type alias Flags =
@@ -84,6 +86,8 @@ queryNameToSqlSelect queryName =
       mostStarredRepos
     "mostReposCreated" ->
       mostReposCreated
+    "mostStarsForRepos" ->
+      mostStarsForRepos
     _ ->
       Debug.crash ("There is no SQL query named " ++ queryName)
 
@@ -141,6 +145,8 @@ update msg model =
           handleMostStarredRepos model results
         "mostReposCreated" ->
           handleMostReposCreated model results
+        "mostStarsForRepos" ->
+          handleMostStarsForRepos model results
         _ ->
           Debug.crash ("no query named " ++ model)
 
@@ -182,6 +188,15 @@ handleMostReposCreated model results =
         |> mostReposCreatedGenerated
     ]
 
+handleMostStarsForRepos : Model -> List String -> (Model, Cmd Msg)
+handleMostStarsForRepos model results =
+  model !
+    [ results
+        |> List.map (decodeString mostStarsForReposRowDecoder)
+        |> filterDecodeErrors
+        |> mostStarsForReposGenerated
+    ]
+
 -- VIEW
 
 view : Model -> Html Msg
@@ -210,3 +225,4 @@ port exitNode : Float -> Cmd msg
 port formattedNumReposCreatedPerMonthGenerated : List (String, String, Int) -> Cmd msg
 port mostStarredReposGenerated: List (String, String, Int) -> Cmd msg
 port mostReposCreatedGenerated: List (String, Int) -> Cmd msg
+port mostStarsForReposGenerated: List (String, Int) -> Cmd msg

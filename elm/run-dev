@@ -4,4 +4,5 @@ node main.js --queryName=formattedNumCommitsPerMonth
 node main.js --queryName=formattedNumReposCreatedPerMonth
 node main.js --queryName=mostStarredRepos
 node main.js --queryName=mostReposCreated
+node main.js --queryName=mostStarsForRepos
 cd ..
