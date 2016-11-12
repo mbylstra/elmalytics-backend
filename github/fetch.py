@@ -40,6 +40,10 @@ def get_current_search_rate_limit():
     return get_current_rate_limits()['search']
 
 
+class Exception404(Exception):
+    pass
+
+
 def rate_limited_github_get(url, params, search_api=False):
 
     params.update(settings.GITHUB_CREDENTIALS)
@@ -61,6 +65,8 @@ def rate_limited_github_get(url, params, search_api=False):
             print 'hit rate limit. sleeping for {} minutes'.format(sleep_time / 60.0)
         time.sleep(sleep_time)
     response = requests.get(url, params)
+    if response.status_code == 400:
+        raise Exception404()
     while response.status_code != 200:
         print response.headers
         print 'status code: {}', response.status_code
@@ -116,8 +122,12 @@ def fetch_all_commits_for_repo(owner, repo_name, since=None):
     }
     if since:
         params["since"] = since
-    response = rate_limited_github_get(url, params, search_api=False)
-    yield response.json()
+    try:
+        response = rate_limited_github_get(url, params, search_api=False)
+        yield response.json()
+    except Exception404 as e:
+        print 'Exception404 during fetch_all_commits_for_repo'
+        return
 
 
 # Error
