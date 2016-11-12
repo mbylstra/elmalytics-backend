@@ -8287,24 +8287,6 @@ var _panosoft$elm_postgres$Postgres$onSelfMsg = F3(
 				};
 				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p6, process);
 			case 'ErrorConnect':
-				var _p7 = _p5._0;
-				var process = function (connection) {
-					return A2(
-						_panosoft$elm_postgres$Postgres_ops['&>'],
-						A2(
-							_elm_lang$core$Platform$sendToApp,
-							router,
-							connection.errorTagger(
-								{ctor: '_Tuple2', _0: _p7, _1: _p5._1})),
-						_elm_lang$core$Task$succeed(
-							_elm_lang$core$Native_Utils.update(
-								state,
-								{
-									connections: A2(_elm_lang$core$Dict$remove, _p7, state.connections)
-								})));
-				};
-				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p7, process);
-			case 'ConnectionLost':
 				var _p8 = _p5._0;
 				var process = function (connection) {
 					return A2(
@@ -8312,7 +8294,7 @@ var _panosoft$elm_postgres$Postgres$onSelfMsg = F3(
 						A2(
 							_elm_lang$core$Platform$sendToApp,
 							router,
-							connection.connectionLostTagger(
+							connection.errorTagger(
 								{ctor: '_Tuple2', _0: _p8, _1: _p5._1})),
 						_elm_lang$core$Task$succeed(
 							_elm_lang$core$Native_Utils.update(
@@ -8321,28 +8303,9 @@ var _panosoft$elm_postgres$Postgres$onSelfMsg = F3(
 									connections: A2(_elm_lang$core$Dict$remove, _p8, state.connections)
 								})));
 				};
+				var _p7 = A2(_elm_lang$core$Debug$log, 'ErrorConnect', true);
 				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p8, process);
-			case 'SuccessDisconnect':
-				var _p9 = _p5._0;
-				var process = function (connection) {
-					var sendToApp = function (tagger) {
-						return A2(
-							_panosoft$elm_postgres$Postgres_ops['&>'],
-							A2(
-								_elm_lang$core$Platform$sendToApp,
-								router,
-								tagger(_p9)),
-							_elm_lang$core$Task$succeed(
-								_elm_lang$core$Native_Utils.update(
-									state,
-									{
-										connections: A2(_elm_lang$core$Dict$remove, _p9, state.connections)
-									})));
-					};
-					return A4(_panosoft$elm_postgres$Postgres$withTagger, state, connection.disconnectionTagger, 'Disconnect', sendToApp);
-				};
-				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p9, process);
-			case 'ErrorDisconnect':
+			case 'ConnectionLost':
 				var _p10 = _p5._0;
 				var process = function (connection) {
 					return A2(
@@ -8350,13 +8313,53 @@ var _panosoft$elm_postgres$Postgres$onSelfMsg = F3(
 						A2(
 							_elm_lang$core$Platform$sendToApp,
 							router,
-							connection.errorTagger(
+							connection.connectionLostTagger(
 								{ctor: '_Tuple2', _0: _p10, _1: _p5._1})),
+						_elm_lang$core$Task$succeed(
+							_elm_lang$core$Native_Utils.update(
+								state,
+								{
+									connections: A2(_elm_lang$core$Dict$remove, _p10, state.connections)
+								})));
+				};
+				var _p9 = A2(_elm_lang$core$Debug$log, 'ConnectionLost', true);
+				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p10, process);
+			case 'SuccessDisconnect':
+				var _p12 = _p5._0;
+				var process = function (connection) {
+					var sendToApp = function (tagger) {
+						return A2(
+							_panosoft$elm_postgres$Postgres_ops['&>'],
+							A2(
+								_elm_lang$core$Platform$sendToApp,
+								router,
+								tagger(_p12)),
+							_elm_lang$core$Task$succeed(
+								_elm_lang$core$Native_Utils.update(
+									state,
+									{
+										connections: A2(_elm_lang$core$Dict$remove, _p12, state.connections)
+									})));
+					};
+					return A4(_panosoft$elm_postgres$Postgres$withTagger, state, connection.disconnectionTagger, 'Disconnect', sendToApp);
+				};
+				var _p11 = A2(_elm_lang$core$Debug$log, 'SuccessDisconnect', true);
+				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p12, process);
+			case 'ErrorDisconnect':
+				var _p13 = _p5._0;
+				var process = function (connection) {
+					return A2(
+						_panosoft$elm_postgres$Postgres_ops['&>'],
+						A2(
+							_elm_lang$core$Platform$sendToApp,
+							router,
+							connection.errorTagger(
+								{ctor: '_Tuple2', _0: _p13, _1: _p5._1})),
 						_elm_lang$core$Task$succeed(state));
 				};
-				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p10, process);
+				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p13, process);
 			case 'SuccessQuery':
-				var _p11 = _p5._0;
+				var _p14 = _p5._0;
 				var process = function (connection) {
 					var sendToApp = function (tagger) {
 						return A2(
@@ -8365,14 +8368,14 @@ var _panosoft$elm_postgres$Postgres$onSelfMsg = F3(
 								_elm_lang$core$Platform$sendToApp,
 								router,
 								tagger(
-									{ctor: '_Tuple2', _0: _p11, _1: _p5._2})),
+									{ctor: '_Tuple2', _0: _p14, _1: _p5._2})),
 							_elm_lang$core$Task$succeed(
 								_elm_lang$core$Native_Utils.update(
 									state,
 									{
 										connections: A3(
 											_elm_lang$core$Dict$insert,
-											_p11,
+											_p14,
 											_elm_lang$core$Native_Utils.update(
 												connection,
 												{
@@ -8383,11 +8386,20 @@ var _panosoft$elm_postgres$Postgres$onSelfMsg = F3(
 					};
 					return A4(_panosoft$elm_postgres$Postgres$withTagger, state, connection.queryTagger, 'Query', sendToApp);
 				};
-				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p11, process);
+				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p14, process);
 			case 'ErrorQuery':
-				return A3(sqlError, _p5._0, _p5._1, _p5._2);
+				var _p17 = _p5._1;
+				var _p16 = _p5._2;
+				var _p15 = A2(
+					_elm_lang$core$Debug$log,
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'ErrorQuery message: `',
+						A2(_elm_lang$core$Basics_ops['++'], _p16, '` for SQL: ')),
+					_p17);
+				return A3(sqlError, _p5._0, _p17, _p16);
 			case 'SuccessExecuteSQL':
-				var _p12 = _p5._0;
+				var _p18 = _p5._0;
 				var process = function (connection) {
 					var sendToApp = function (tagger) {
 						return A2(
@@ -8396,22 +8408,22 @@ var _panosoft$elm_postgres$Postgres$onSelfMsg = F3(
 								_elm_lang$core$Platform$sendToApp,
 								router,
 								tagger(
-									{ctor: '_Tuple2', _0: _p12, _1: _p5._1})),
+									{ctor: '_Tuple2', _0: _p18, _1: _p5._1})),
 							_elm_lang$core$Task$succeed(state));
 					};
 					return A4(_panosoft$elm_postgres$Postgres$withTagger, state, connection.executeTagger, 'Execute', sendToApp);
 				};
-				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p12, process);
+				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p18, process);
 			case 'ErrorExecuteSQL':
 				return A3(sqlError, _p5._0, _p5._1, _p5._2);
 			case 'SuccessListenUnlisten':
-				var _p14 = _p5._1;
-				var _p13 = _p5._2;
+				var _p20 = _p5._1;
+				var _p19 = _p5._2;
 				var process = function (connection) {
-					var newState = _elm_lang$core$Native_Utils.eq(_p14, 'listen') ? _elm_lang$core$Native_Utils.update(
+					var newState = _elm_lang$core$Native_Utils.eq(_p20, 'listen') ? _elm_lang$core$Native_Utils.update(
 						state,
 						{
-							nativeListeners: A3(_elm_lang$core$Dict$insert, _p13, _p5._3, state.nativeListeners)
+							nativeListeners: A3(_elm_lang$core$Dict$insert, _p19, _p5._3, state.nativeListeners)
 						}) : state;
 					var sendToApp = function (tagger) {
 						return A2(
@@ -8420,7 +8432,7 @@ var _panosoft$elm_postgres$Postgres$onSelfMsg = F3(
 								_elm_lang$core$Platform$sendToApp,
 								router,
 								tagger(
-									{ctor: '_Tuple3', _0: _p13, _1: _p5._0, _2: _p14})),
+									{ctor: '_Tuple3', _0: _p19, _1: _p5._0, _2: _p20})),
 							_elm_lang$core$Task$succeed(newState));
 					};
 					return A4(_panosoft$elm_postgres$Postgres$withTagger, state, connection.listenTagger, 'ListenUnlisten', sendToApp);
@@ -8430,8 +8442,8 @@ var _panosoft$elm_postgres$Postgres$onSelfMsg = F3(
 					function (listenerState) {
 						return listenerState;
 					},
-					A2(_elm_lang$core$Dict$get, _p13, state.listeners));
-				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p13, process);
+					A2(_elm_lang$core$Dict$get, _p19, state.listeners));
+				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p19, process);
 			case 'ErrorListenUnlisten':
 				return A3(
 					sqlError,
@@ -8443,7 +8455,7 @@ var _panosoft$elm_postgres$Postgres$onSelfMsg = F3(
 						_elm_lang$core$Native_List.fromArray(
 							[_p5._0, _p5._1, _p5._4])));
 			default:
-				var _p15 = _p5._0;
+				var _p21 = _p5._0;
 				var process = function (connection) {
 					var sendToApp = function (tagger) {
 						return A2(
@@ -8452,20 +8464,20 @@ var _panosoft$elm_postgres$Postgres$onSelfMsg = F3(
 								_elm_lang$core$Platform$sendToApp,
 								router,
 								tagger(
-									{ctor: '_Tuple3', _0: _p15, _1: _p5._1, _2: _p5._2})),
+									{ctor: '_Tuple3', _0: _p21, _1: _p5._1, _2: _p5._2})),
 							_elm_lang$core$Task$succeed(state));
 					};
 					return A4(_panosoft$elm_postgres$Postgres$withTagger, state, connection.eventTagger, 'ListenEvent', sendToApp);
 				};
-				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p15, process);
+				return A3(_panosoft$elm_postgres$Postgres$withConnection, state, _p21, process);
 		}
 	});
 var _panosoft$elm_postgres$Postgres_ops = _panosoft$elm_postgres$Postgres_ops || {};
 _panosoft$elm_postgres$Postgres_ops['?!='] = F2(
 	function (maybe, lazy) {
-		var _p16 = maybe;
-		if (_p16.ctor === 'Just') {
-			return _p16._0;
+		var _p22 = maybe;
+		if (_p22.ctor === 'Just') {
+			return _p22._0;
 		} else {
 			return lazy(
 				{ctor: '_Tuple0'});
@@ -8508,11 +8520,11 @@ var _panosoft$elm_postgres$Postgres$ListenerState = F4(
 	});
 var _panosoft$elm_postgres$Postgres$addMySub = F2(
 	function (sub, dict) {
-		var _p17 = sub;
+		var _p23 = sub;
 		return A3(
 			_elm_lang$core$Dict$insert,
-			_p17._3,
-			A4(_panosoft$elm_postgres$Postgres$ListenerState, _p17._4, _p17._0, _p17._1, _p17._2),
+			_p23._3,
+			A4(_panosoft$elm_postgres$Postgres$ListenerState, _p23._4, _p23._0, _p23._1, _p23._2),
 			dict);
 	});
 var _panosoft$elm_postgres$Postgres$State = F4(
@@ -8563,80 +8575,80 @@ var _panosoft$elm_postgres$Postgres$Connect = F8(
 	});
 var _panosoft$elm_postgres$Postgres$cmdMap = F2(
 	function (f, cmd) {
-		var _p18 = cmd;
-		switch (_p18.ctor) {
+		var _p24 = cmd;
+		switch (_p24.ctor) {
 			case 'Connect':
 				return A8(
 					_panosoft$elm_postgres$Postgres$Connect,
-					function (_p19) {
-						return f(
-							_p18._0(_p19));
-					},
-					function (_p20) {
-						return f(
-							_p18._1(_p20));
-					},
-					function (_p21) {
-						return f(
-							_p18._2(_p21));
-					},
-					_p18._3,
-					_p18._4,
-					_p18._5,
-					_p18._6,
-					_p18._7);
-			case 'Disconnect':
-				return A4(
-					_panosoft$elm_postgres$Postgres$Disconnect,
-					function (_p22) {
-						return f(
-							_p18._0(_p22));
-					},
-					function (_p23) {
-						return f(
-							_p18._1(_p23));
-					},
-					_p18._2,
-					_p18._3);
-			case 'Query':
-				return A5(
-					_panosoft$elm_postgres$Postgres$Query,
-					function (_p24) {
-						return f(
-							_p18._0(_p24));
-					},
 					function (_p25) {
 						return f(
-							_p18._1(_p25));
+							_p24._0(_p25));
 					},
-					_p18._2,
-					_p18._3,
-					_p18._4);
-			case 'MoreQueryResults':
-				return A3(
-					_panosoft$elm_postgres$Postgres$MoreQueryResults,
 					function (_p26) {
 						return f(
-							_p18._0(_p26));
+							_p24._1(_p26));
 					},
 					function (_p27) {
 						return f(
-							_p18._1(_p27));
+							_p24._2(_p27));
 					},
-					_p18._2);
-			default:
+					_p24._3,
+					_p24._4,
+					_p24._5,
+					_p24._6,
+					_p24._7);
+			case 'Disconnect':
 				return A4(
-					_panosoft$elm_postgres$Postgres$ExecuteSQL,
+					_panosoft$elm_postgres$Postgres$Disconnect,
 					function (_p28) {
 						return f(
-							_p18._0(_p28));
+							_p24._0(_p28));
 					},
 					function (_p29) {
 						return f(
-							_p18._1(_p29));
+							_p24._1(_p29));
 					},
-					_p18._2,
-					_p18._3);
+					_p24._2,
+					_p24._3);
+			case 'Query':
+				return A5(
+					_panosoft$elm_postgres$Postgres$Query,
+					function (_p30) {
+						return f(
+							_p24._0(_p30));
+					},
+					function (_p31) {
+						return f(
+							_p24._1(_p31));
+					},
+					_p24._2,
+					_p24._3,
+					_p24._4);
+			case 'MoreQueryResults':
+				return A3(
+					_panosoft$elm_postgres$Postgres$MoreQueryResults,
+					function (_p32) {
+						return f(
+							_p24._0(_p32));
+					},
+					function (_p33) {
+						return f(
+							_p24._1(_p33));
+					},
+					_p24._2);
+			default:
+				return A4(
+					_panosoft$elm_postgres$Postgres$ExecuteSQL,
+					function (_p34) {
+						return f(
+							_p24._0(_p34));
+					},
+					function (_p35) {
+						return f(
+							_p24._1(_p35));
+					},
+					_p24._2,
+					_p24._3);
 		}
 	});
 var _panosoft$elm_postgres$Postgres$connect = F8(
@@ -8650,23 +8662,23 @@ var _panosoft$elm_postgres$Postgres$Listen = F5(
 	});
 var _panosoft$elm_postgres$Postgres$subMap = F2(
 	function (f, sub) {
-		var _p30 = sub;
+		var _p36 = sub;
 		return A5(
 			_panosoft$elm_postgres$Postgres$Listen,
-			function (_p31) {
+			function (_p37) {
 				return f(
-					_p30._0(_p31));
+					_p36._0(_p37));
 			},
-			function (_p32) {
+			function (_p38) {
 				return f(
-					_p30._1(_p32));
+					_p36._1(_p38));
 			},
-			function (_p33) {
+			function (_p39) {
 				return f(
-					_p30._2(_p33));
+					_p36._2(_p39));
 			},
-			_p30._3,
-			_p30._4);
+			_p36._3,
+			_p36._4);
 	});
 var _panosoft$elm_postgres$Postgres$listen = F5(
 	function (errorTagger, listenTagger, eventTagger, connectionId, channel) {
@@ -8695,11 +8707,11 @@ var _panosoft$elm_postgres$Postgres$ErrorExecuteSQL = F3(
 var _panosoft$elm_postgres$Postgres$startStopListeners = F4(
 	function (listenUnlisten, router, listeners, state) {
 		var startStopListener = F3(
-			function (connectionId, listenerState, _p34) {
-				var _p35 = _p34;
-				var _p37 = _p35._1;
-				var _p36 = function () {
-					var nativeListener = A2(_elm_lang$core$Dict$get, connectionId, _p37.nativeListeners);
+			function (connectionId, listenerState, _p40) {
+				var _p41 = _p40;
+				var _p43 = _p41._1;
+				var _p42 = function () {
+					var nativeListener = A2(_elm_lang$core$Dict$get, connectionId, _p43.nativeListeners);
 					var sql = A2(
 						_elm_lang$core$Basics_ops['++'],
 						listenUnlisten,
@@ -8734,7 +8746,7 @@ var _panosoft$elm_postgres$Postgres$startStopListeners = F4(
 								_0: A2(getTask, connection, listenUnlisten),
 								_1: A3(
 									_panosoft$elm_postgres$Postgres$updateConnection,
-									_p37,
+									_p43,
 									connectionId,
 									_elm_lang$core$Native_Utils.update(
 										connection,
@@ -8746,21 +8758,21 @@ var _panosoft$elm_postgres$Postgres$startStopListeners = F4(
 										}))
 							};
 						},
-						A2(_elm_lang$core$Dict$get, connectionId, _p37.connections));
+						A2(_elm_lang$core$Dict$get, connectionId, _p43.connections));
 					return A2(
 						_panosoft$elm_postgres$Postgres_ops['?='],
 						maybeTask,
 						{
 							ctor: '_Tuple2',
 							_0: A3(_panosoft$elm_postgres$Postgres$invalidConnectionId, router, listenerState.errorTagger, connectionId),
-							_1: _p37
+							_1: _p43
 						});
 				}();
-				var executeTask = _p36._0;
-				var executeState = _p36._1;
+				var executeTask = _p42._0;
+				var executeState = _p42._1;
 				return {
 					ctor: '_Tuple2',
-					_0: A2(_panosoft$elm_postgres$Postgres_ops['&>'], executeTask, _p35._0),
+					_0: A2(_panosoft$elm_postgres$Postgres_ops['&>'], executeTask, _p41._0),
 					_1: executeState
 				};
 			});
@@ -8810,10 +8822,10 @@ var _panosoft$elm_postgres$Postgres$SuccessConnect = F3(
 	});
 var _panosoft$elm_postgres$Postgres$handleCmd = F3(
 	function (router, state, cmd) {
-		var _p38 = cmd;
-		switch (_p38.ctor) {
+		var _p44 = cmd;
+		switch (_p44.ctor) {
 			case 'Connect':
-				var newConnection = _panosoft$elm_postgres$Postgres$Connection(_p38._2)(_p38._1)(_p38._0)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing);
+				var newConnection = _panosoft$elm_postgres$Postgres$Connection(_p44._2)(_p44._1)(_p44._0)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing);
 				var connectionId = state.nextId;
 				var connectionLostCb = function (err) {
 					return A2(
@@ -8831,11 +8843,11 @@ var _panosoft$elm_postgres$Postgres$handleCmd = F3(
 							_panosoft$elm_postgres$Postgres$ErrorConnect(connectionId),
 							_panosoft$elm_postgres$Postgres$SuccessConnect(connectionId)),
 						_panosoft$elm_postgres$Postgres$connectionTimeout,
-						_p38._3,
-						_p38._4,
-						_p38._5,
-						_p38._6,
-						_p38._7,
+						_p44._3,
+						_p44._4,
+						_p44._5,
+						_p44._6,
+						_p44._7,
 						connectionLostCb),
 					_1: _elm_lang$core$Native_Utils.update(
 						state,
@@ -8845,8 +8857,8 @@ var _panosoft$elm_postgres$Postgres$handleCmd = F3(
 						})
 				};
 			case 'Disconnect':
-				var _p40 = _p38._0;
-				var _p39 = _p38._2;
+				var _p46 = _p44._0;
+				var _p45 = _p44._2;
 				return A2(
 					_panosoft$elm_postgres$Postgres_ops['?='],
 					A2(
@@ -8859,34 +8871,34 @@ var _panosoft$elm_postgres$Postgres$handleCmd = F3(
 									A3(
 										_panosoft$elm_postgres$Postgres$settings0,
 										router,
-										_panosoft$elm_postgres$Postgres$ErrorDisconnect(_p39),
-										_panosoft$elm_postgres$Postgres$SuccessDisconnect(_p39)),
+										_panosoft$elm_postgres$Postgres$ErrorDisconnect(_p45),
+										_panosoft$elm_postgres$Postgres$SuccessDisconnect(_p45)),
 									connection.client,
-									_p38._3,
+									_p44._3,
 									connection.nativeListener),
 								_1: A3(
 									_panosoft$elm_postgres$Postgres$updateConnection,
 									state,
-									_p39,
+									_p45,
 									_elm_lang$core$Native_Utils.update(
 										connection,
 										{
-											disconnectionTagger: _elm_lang$core$Maybe$Just(_p38._1),
-											errorTagger: _p40
+											disconnectionTagger: _elm_lang$core$Maybe$Just(_p44._1),
+											errorTagger: _p46
 										}))
 							};
 						},
-						A2(_elm_lang$core$Dict$get, _p39, state.connections)),
+						A2(_elm_lang$core$Dict$get, _p45, state.connections)),
 					{
 						ctor: '_Tuple2',
-						_0: A3(_panosoft$elm_postgres$Postgres$invalidConnectionId, router, _p40, _p39),
+						_0: A3(_panosoft$elm_postgres$Postgres$invalidConnectionId, router, _p46, _p45),
 						_1: state
 					});
 			case 'Query':
-				var _p44 = _p38._3;
-				var _p43 = _p38._4;
-				var _p42 = _p38._0;
-				var _p41 = _p38._2;
+				var _p50 = _p44._3;
+				var _p49 = _p44._4;
+				var _p48 = _p44._0;
+				var _p47 = _p44._2;
 				return A2(
 					_panosoft$elm_postgres$Postgres_ops['?='],
 					A2(
@@ -8899,34 +8911,34 @@ var _panosoft$elm_postgres$Postgres$handleCmd = F3(
 									A3(
 										_panosoft$elm_postgres$Postgres$settings2,
 										router,
-										A2(_panosoft$elm_postgres$Postgres$ErrorQuery, _p41, _p44),
-										_panosoft$elm_postgres$Postgres$SuccessQuery(_p41)),
+										A2(_panosoft$elm_postgres$Postgres$ErrorQuery, _p47, _p50),
+										_panosoft$elm_postgres$Postgres$SuccessQuery(_p47)),
 									connection.client,
-									_p44,
-									_p43,
+									_p50,
+									_p49,
 									connection.nativeListener),
 								_1: A3(
 									_panosoft$elm_postgres$Postgres$updateConnection,
 									state,
-									_p41,
+									_p47,
 									_elm_lang$core$Native_Utils.update(
 										connection,
 										{
-											sql: _elm_lang$core$Maybe$Just(_p44),
-											recordCount: _elm_lang$core$Maybe$Just(_p43),
-											queryTagger: _elm_lang$core$Maybe$Just(_p38._1),
-											errorTagger: _p42
+											sql: _elm_lang$core$Maybe$Just(_p50),
+											recordCount: _elm_lang$core$Maybe$Just(_p49),
+											queryTagger: _elm_lang$core$Maybe$Just(_p44._1),
+											errorTagger: _p48
 										}))
 							};
 						},
-						A2(_elm_lang$core$Dict$get, _p41, state.connections)),
+						A2(_elm_lang$core$Dict$get, _p47, state.connections)),
 					{
 						ctor: '_Tuple2',
-						_0: A3(_panosoft$elm_postgres$Postgres$invalidConnectionId, router, _p42, _p41),
+						_0: A3(_panosoft$elm_postgres$Postgres$invalidConnectionId, router, _p48, _p47),
 						_1: state
 					});
 			case 'MoreQueryResults':
-				var _p46 = _p38._2;
+				var _p52 = _p44._2;
 				return A2(
 					_panosoft$elm_postgres$Postgres_ops['?='],
 					A2(
@@ -8945,8 +8957,8 @@ var _panosoft$elm_postgres$Postgres$handleCmd = F3(
 													A3(
 														_panosoft$elm_postgres$Postgres$settings2,
 														router,
-														A2(_panosoft$elm_postgres$Postgres$ErrorQuery, _p46, sql),
-														_panosoft$elm_postgres$Postgres$SuccessQuery(_p46)),
+														A2(_panosoft$elm_postgres$Postgres$ErrorQuery, _p52, sql),
+														_panosoft$elm_postgres$Postgres$SuccessQuery(_p52)),
 													connection.client,
 													stream,
 													recordCount),
@@ -8956,7 +8968,7 @@ var _panosoft$elm_postgres$Postgres$handleCmd = F3(
 									connection.sql,
 									connection.recordCount,
 									connection.stream),
-								function (_p45) {
+								function (_p51) {
 									return {
 										ctor: '_Tuple2',
 										_0: A2(
@@ -8971,16 +8983,16 @@ var _panosoft$elm_postgres$Postgres$handleCmd = F3(
 									};
 								});
 						},
-						A2(_elm_lang$core$Dict$get, _p46, state.connections)),
+						A2(_elm_lang$core$Dict$get, _p52, state.connections)),
 					{
 						ctor: '_Tuple2',
-						_0: A3(_panosoft$elm_postgres$Postgres$invalidConnectionId, router, _p38._0, _p46),
+						_0: A3(_panosoft$elm_postgres$Postgres$invalidConnectionId, router, _p44._0, _p52),
 						_1: state
 					});
 			default:
-				var _p49 = _p38._3;
-				var _p48 = _p38._0;
-				var _p47 = _p38._2;
+				var _p55 = _p44._3;
+				var _p54 = _p44._0;
+				var _p53 = _p44._2;
 				return A2(
 					_panosoft$elm_postgres$Postgres_ops['?='],
 					A2(
@@ -8993,27 +9005,27 @@ var _panosoft$elm_postgres$Postgres$handleCmd = F3(
 									A3(
 										_panosoft$elm_postgres$Postgres$settings1,
 										router,
-										A2(_panosoft$elm_postgres$Postgres$ErrorExecuteSQL, _p47, _p49),
-										_panosoft$elm_postgres$Postgres$SuccessExecuteSQL(_p47)),
+										A2(_panosoft$elm_postgres$Postgres$ErrorExecuteSQL, _p53, _p55),
+										_panosoft$elm_postgres$Postgres$SuccessExecuteSQL(_p53)),
 									connection.client,
-									_p49),
+									_p55),
 								_1: A3(
 									_panosoft$elm_postgres$Postgres$updateConnection,
 									state,
-									_p47,
+									_p53,
 									_elm_lang$core$Native_Utils.update(
 										connection,
 										{
-											sql: _elm_lang$core$Maybe$Just(_p49),
-											executeTagger: _elm_lang$core$Maybe$Just(_p38._1),
-											errorTagger: _p48
+											sql: _elm_lang$core$Maybe$Just(_p55),
+											executeTagger: _elm_lang$core$Maybe$Just(_p44._1),
+											errorTagger: _p54
 										}))
 							};
 						},
-						A2(_elm_lang$core$Dict$get, _p47, state.connections)),
+						A2(_elm_lang$core$Dict$get, _p53, state.connections)),
 					{
 						ctor: '_Tuple2',
-						_0: A3(_panosoft$elm_postgres$Postgres$invalidConnectionId, router, _p48, _p47),
+						_0: A3(_panosoft$elm_postgres$Postgres$invalidConnectionId, router, _p54, _p53),
 						_1: state
 					});
 		}
@@ -9022,21 +9034,21 @@ var _panosoft$elm_postgres$Postgres$onEffects = F4(
 	function (router, cmds, newSubs, state) {
 		var handleOneCmd = F3(
 			function (state, cmd, tasks) {
-				var _p50 = A3(_panosoft$elm_postgres$Postgres$handleCmd, router, state, cmd);
-				var task = _p50._0;
-				var newState = _p50._1;
+				var _p56 = A3(_panosoft$elm_postgres$Postgres$handleCmd, router, state, cmd);
+				var task = _p56._0;
+				var newState = _p56._1;
 				return {
 					ctor: '_Tuple2',
 					_0: A2(_elm_lang$core$List_ops['::'], task, tasks),
 					_1: newState
 				};
 			});
-		var _p51 = A3(
+		var _p57 = A3(
 			_elm_lang$core$List$foldl,
 			F2(
-				function (cmd, _p52) {
-					var _p53 = _p52;
-					return A3(handleOneCmd, _p53._1, cmd, _p53._0);
+				function (cmd, _p58) {
+					var _p59 = _p58;
+					return A3(handleOneCmd, _p59._1, cmd, _p59._0);
 				}),
 			{
 				ctor: '_Tuple2',
@@ -9045,19 +9057,19 @@ var _panosoft$elm_postgres$Postgres$onEffects = F4(
 				_1: state
 			},
 			cmds);
-		var tasks = _p51._0;
-		var cmdState = _p51._1;
+		var tasks = _p57._0;
+		var cmdState = _p57._1;
 		var cmdTask = _elm_lang$core$Task$sequence(
 			_elm_lang$core$List$reverse(tasks));
 		var newSubsDict = A3(_elm_lang$core$List$foldl, _panosoft$elm_postgres$Postgres$addMySub, _elm_lang$core$Dict$empty, newSubs);
 		var oldListeners = A2(_elm_lang$core$Dict$diff, state.listeners, newSubsDict);
-		var _p54 = A3(_panosoft$elm_postgres$Postgres$stopListeners, router, oldListeners, cmdState);
-		var stopTask = _p54._0;
-		var stopState = _p54._1;
+		var _p60 = A3(_panosoft$elm_postgres$Postgres$stopListeners, router, oldListeners, cmdState);
+		var stopTask = _p60._0;
+		var stopState = _p60._1;
 		var newListeners = A2(_elm_lang$core$Dict$diff, newSubsDict, state.listeners);
-		var _p55 = A3(_panosoft$elm_postgres$Postgres$startListeners, router, newListeners, stopState);
-		var startTask = _p55._0;
-		var startState = _p55._1;
+		var _p61 = A3(_panosoft$elm_postgres$Postgres$startListeners, router, newListeners, stopState);
+		var startTask = _p61._0;
+		var startState = _p61._1;
 		var keepListeners = A2(_elm_lang$core$Dict$intersect, state.listeners, newSubsDict);
 		return A2(
 			_panosoft$elm_postgres$Postgres_ops['&>'],
@@ -9074,14 +9086,15 @@ var _panosoft$elm_postgres$Postgres$onEffects = F4(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Postgres'] = {pkg: 'panosoft/elm-postgres', init: _panosoft$elm_postgres$Postgres$init, onEffects: _panosoft$elm_postgres$Postgres$onEffects, onSelfMsg: _panosoft$elm_postgres$Postgres$onSelfMsg, tag: 'fx', cmdMap: _panosoft$elm_postgres$Postgres$cmdMap, subMap: _panosoft$elm_postgres$Postgres$subMap};
 
-var _user$project$Decoders$simpleTwoColumnRowDecoder = A3(
-	_elm_lang$core$Json_Decode$object2,
-	F2(
-		function (v0, v1) {
-			return {ctor: '_Tuple2', _0: v0, _1: v1};
+var _user$project$Decoders$mostStarredReposRowDecoder = A4(
+	_elm_lang$core$Json_Decode$object3,
+	F3(
+		function (v0, v1, v2) {
+			return {ctor: '_Tuple3', _0: v0, _1: v1, _2: v2};
 		}),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'a', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'b', _elm_lang$core$Json_Decode$int));
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'repo_name', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'user_login', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'num_stars', _elm_lang$core$Json_Decode$int));
 var _user$project$Decoders$totalReposCreatedRowTupleDecoder = A4(
 	_elm_lang$core$Json_Decode$object3,
 	F3(
@@ -9962,24 +9975,37 @@ var _user$project$Queries$totalReposCreatedByUser = A3(
 					])))));
 var _user$project$Queries$mostStarredRepos = A2(
 	_user$project$SqlBuilder$limit,
-	20,
+	50,
 	A3(
 		_user$project$SqlBuilder$sortByColumn,
 		'stargazers_count',
 		_user$project$SqlBuilder_AST$Descending,
 		A2(
-			_user$project$SqlBuilder$fromTable,
-			'github_repository',
+			_user$project$SqlBuilder$from,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A4(
+					_user$project$SqlBuilder$innerJoinTable,
+					'github_user',
+					_user$project$SqlBuilder$on,
+					_user$project$SqlBuilder$equalColumns(
+						{ctor: '_Tuple2', _0: 'github_repository.owner_id', _1: 'github_user.id'}),
+					_user$project$SqlBuilder$table('github_repository'))
+				]),
 			_user$project$SqlBuilder$select(
 				_elm_lang$core$Native_List.fromArray(
 					[
 						A2(
 						_user$project$SqlBuilder$asColumn,
-						'a',
-						_user$project$SqlBuilder$column('name')),
+						'repo_name',
+						_user$project$SqlBuilder$column('github_repository.name')),
 						A2(
 						_user$project$SqlBuilder$asColumn,
-						'b',
+						'user_login',
+						_user$project$SqlBuilder$column('github_user.login')),
+						A2(
+						_user$project$SqlBuilder$asColumn,
+						'num_stars',
 						_user$project$SqlBuilder$column('stargazers_count'))
 					])))));
 var _user$project$Queries$numCommitsPerMonth = A3(
@@ -10157,26 +10183,26 @@ var _user$project$Project$handleTotalReposCreated = F2(
 							results)))
 				]));
 	});
-var _user$project$Project$simpleTwoColumnGenerated = _elm_lang$core$Native_Platform.outgoingPort(
-	'simpleTwoColumnGenerated',
+var _user$project$Project$mostStarredReposGenerated = _elm_lang$core$Native_Platform.outgoingPort(
+	'mostStarredReposGenerated',
 	function (v) {
 		return _elm_lang$core$Native_List.toArray(v).map(
 			function (v) {
-				return [v._0, v._1];
+				return [v._0, v._1, v._2];
 			});
 	});
-var _user$project$Project$handleSimpleTwoColumn = F2(
+var _user$project$Project$handleMostStarredRepos = F2(
 	function (model, results) {
 		return A2(
 			_elm_lang$core$Platform_Cmd_ops['!'],
 			model,
 			_elm_lang$core$Native_List.fromArray(
 				[
-					_user$project$Project$simpleTwoColumnGenerated(
+					_user$project$Project$mostStarredReposGenerated(
 					_user$project$Project$filterDecodeErrors(
 						A2(
 							_elm_lang$core$List$map,
-							_elm_lang$core$Json_Decode$decodeString(_user$project$Decoders$simpleTwoColumnRowDecoder),
+							_elm_lang$core$Json_Decode$decodeString(_user$project$Decoders$mostStarredReposRowDecoder),
 							results)))
 				]));
 	});
@@ -10234,8 +10260,13 @@ var _user$project$Project$update = F2(
 						[]));
 			case 'PostgresError':
 				var l = A2(
-					_elm_lang$core$Debug$log,
-					'ConnectionLostError',
+					_elm_lang$core$Native_Utils.crash(
+						'Project',
+						{
+							start: {line: 119, column: 17},
+							end: {line: 119, column: 28}
+						}),
+					'PostgresError',
 					{ctor: '_Tuple2', _0: _p4._0._0, _1: _p4._0._1});
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10258,7 +10289,7 @@ var _user$project$Project$update = F2(
 					case 'formattedNumCommitsPerMonth':
 						return A2(_user$project$Project$handleTotalReposCreated, model, _p8);
 					case 'mostStarredRepos':
-						return A2(_user$project$Project$handleSimpleTwoColumn, model, _p8);
+						return A2(_user$project$Project$handleMostStarredRepos, model, _p8);
 					default:
 						return _elm_lang$core$Native_Utils.crashCase(
 							'Project',

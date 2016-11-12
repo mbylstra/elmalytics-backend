@@ -18,7 +18,7 @@ import Queries exposing
   )
 import Decoders exposing
   ( totalReposCreatedRowTupleDecoder
-  , simpleTwoColumnRowDecoder
+  , mostStarredReposRowDecoder
   )
 
 type alias Flags =
@@ -116,7 +116,7 @@ update msg model =
     PostgresError ( connectionId, errorMessage ) ->
         let
             l =
-                Debug.log "ConnectionLostError" ( connectionId, errorMessage )
+                Debug.crash "PostgresError" ( connectionId, errorMessage )
         in
             model ! []
 
@@ -134,7 +134,7 @@ update msg model =
         "formattedNumCommitsPerMonth" ->
           handleTotalReposCreated model results
         "mostStarredRepos" ->
-          handleSimpleTwoColumn model results
+          handleMostStarredRepos model results
         _ ->
           Debug.crash ("no query named " ++ model)
 
@@ -158,13 +158,13 @@ handleTotalReposCreated model results =
         |> formattedNumReposCreatedPerMonthGenerated
     ]
 
-handleSimpleTwoColumn : Model -> List String -> (Model, Cmd Msg)
-handleSimpleTwoColumn model results =
+handleMostStarredRepos : Model -> List String -> (Model, Cmd Msg)
+handleMostStarredRepos model results =
   model !
     [ results
-        |> List.map (decodeString simpleTwoColumnRowDecoder)
+        |> List.map (decodeString mostStarredReposRowDecoder)
         |> filterDecodeErrors
-        |> simpleTwoColumnGenerated
+        |> mostStarredReposGenerated
     ]
 
 -- VIEW
@@ -193,4 +193,4 @@ subscriptions model =
 
 port exitNode : Float -> Cmd msg
 port formattedNumReposCreatedPerMonthGenerated : List (String, String, Int) -> Cmd msg
-port simpleTwoColumnGenerated: List (String, Int) -> Cmd msg
+port mostStarredReposGenerated: List (String, String, Int) -> Cmd msg

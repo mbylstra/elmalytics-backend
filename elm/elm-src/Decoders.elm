@@ -36,11 +36,12 @@ totalReposCreatedRowTupleDecoder =
 --   list totalReposCreatedRowTupleDecoder
 
 
-simpleTwoColumnRowDecoder : Decoder (String, Int)
-simpleTwoColumnRowDecoder =
-    object2 (,)
-      ("a" := string)
-      ("b" := int)
+mostStarredReposRowDecoder : Decoder (String, String, Int)
+mostStarredReposRowDecoder =
+    object3 (,,)
+      ("repo_name" := string)
+      ("user_login" := string)
+      ("num_stars" := int)
 
 -- Remember that a big problem with lists in Elm is they can only contain
 -- one type! So, for each column you need a list, rather than a list for each

@@ -45,7 +45,7 @@ ports.formattedNumReposCreatedPerMonthGenerated.subscribe( results => {
   writeResults(results);
 });
 
-ports.simpleTwoColumnGenerated.subscribe( results => {
+ports.mostStarredReposGenerated.subscribe( results => {
   writeResults(results);
 });
 

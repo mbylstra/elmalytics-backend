@@ -50,12 +50,17 @@ numCommitsPerMonth =
 mostStarredRepos : SimpleSelect
 mostStarredRepos =
   select
-    [ column "name" |> asColumn "a"
-    , column "stargazers_count" |> asColumn "b"
+    [ column "github_repository.name" |> asColumn "repo_name"
+    , column "github_user.login" |> asColumn "user_login"
+    , column "stargazers_count" |> asColumn "num_stars"
     ]
-  |> fromTable "github_repository"
+  |> from
+    [ table "github_repository"
+      |> innerJoinTable "github_user"
+         on (equalColumns ("github_repository.owner_id", "github_user.id"))
+    ]
   |> sortByColumn "stargazers_count" Descending
-  |> limit 20
+  |> limit 50
 
 
 totalReposCreatedByUser : SimpleSelect
