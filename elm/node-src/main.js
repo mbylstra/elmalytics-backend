@@ -34,11 +34,19 @@ ports.exitNode.subscribe(exitCode => {
 	process.exit(exitCode);
 });
 
-ports.dataGenerated.subscribe(results => {
+function writeResults(results) {
   var filePath = path.resolve(jsonDirPath, queryName + ".json");
   jsonfile.writeFileSync(filePath, results, {spaces: 4});
   console.log(`${filePath} written`);
 	process.exit(1);
+}
+
+ports.formattedNumReposCreatedPerMonthGenerated.subscribe( results => {
+  writeResults(results);
+});
+
+ports.simpleTwoColumnGenerated.subscribe( results => {
+  writeResults(results);
 });
 
 process.on('uncaughtException', err => {

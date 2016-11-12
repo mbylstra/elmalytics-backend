@@ -1,6 +1,6 @@
 port module Project exposing (..)
 
-
+-- import Dict
 import Html.App
 import Html exposing (Html, div )
 
@@ -14,8 +14,12 @@ import SqlBuilder.AST exposing (SimpleSelect)
 import Queries exposing
   ( formattedNumReposCreatedPerMonth
   , formattedNumCommitsPerMonth
+  , mostStarredRepos
   )
-import Decoders exposing (totalReposCreatedRowTupleDecoder)
+import Decoders exposing
+  ( totalReposCreatedRowTupleDecoder
+  , simpleTwoColumnRowDecoder
+  )
 
 type alias Flags =
   { host: String
@@ -54,8 +58,17 @@ type Msg
   | PostgresError (Int, String)
   | ConnectionLostError (Int, String)
   | Disconnect Int
-  | Query (Int, List String)
+  | QueryResponse (Int, List String)
 
+
+-- TODO: this needs to include the decoder
+-- also consider a record? Or maybe a dict?
+
+
+type alias Query decoder =
+  { query : SimpleSelect
+  , decoder : decoder
+  }
 
 
 queryNameToSqlSelect : String -> SimpleSelect
@@ -65,6 +78,8 @@ queryNameToSqlSelect queryName =
       formattedNumReposCreatedPerMonth
     "formattedNumCommitsPerMonth" ->
       formattedNumCommitsPerMonth
+    "mostStarredRepos" ->
+      mostStarredRepos
     _ ->
       Debug.crash ("There is no SQL query named " ++ queryName)
 
@@ -84,7 +99,7 @@ update msg model =
             queryCmd =
               query
                 PostgresError
-                Query
+                QueryResponse
                 connectionId
                 queryString
                 1000
@@ -112,25 +127,45 @@ update msg model =
         in
             model ! []
 
-    Query ( connectionId, results ) ->
-        let
-            l =
-                Debug.log "Query results fetched" True
-            decodedResults : List (String, String, Int)
-            decodedResults =
-              results
-              |> List.map (decodeString totalReposCreatedRowTupleDecoder)
-              |> List.map
-                  (\rowResult ->
-                    case rowResult of
-                      Ok result-> result
-                      Err msg -> Debug.crash msg
-                  )
-        in
-            -- model ! [ exitNode 1 ]
-            model ! [ dataGenerated decodedResults ]
+    QueryResponse ( connectionId, results ) ->
+      case model of
+        "formattedNumReposCreatedPerMonth" ->
+          handleTotalReposCreated model results
+        "formattedNumCommitsPerMonth" ->
+          handleTotalReposCreated model results
+        "mostStarredRepos" ->
+          handleSimpleTwoColumn model results
+        _ ->
+          Debug.crash ("no query named " ++ model)
 
 
+filterDecodeErrors : List (Result String a) -> List a
+filterDecodeErrors rows =
+  rows
+  |> List.map
+      (\rowResult ->
+        case rowResult of
+          Ok result-> result
+          Err msg -> Debug.crash msg
+      )
+
+handleTotalReposCreated : Model -> List String -> (Model, Cmd Msg)
+handleTotalReposCreated model results =
+  model !
+    [ results
+        |> List.map (decodeString totalReposCreatedRowTupleDecoder)
+        |> filterDecodeErrors
+        |> formattedNumReposCreatedPerMonthGenerated
+    ]
+
+handleSimpleTwoColumn : Model -> List String -> (Model, Cmd Msg)
+handleSimpleTwoColumn model results =
+  model !
+    [ results
+        |> List.map (decodeString simpleTwoColumnRowDecoder)
+        |> filterDecodeErrors
+        |> simpleTwoColumnGenerated
+    ]
 
 -- VIEW
 
@@ -156,8 +191,6 @@ subscriptions model =
 --------------------------------------------------------------------------------
 -- Posgresql stuff
 
--- connect : ErrorTagger msg -> ConnectTagger msg -> ConnectionLostTagger msg -> String -> Int -> String -> String -> String -> Cmd msg
--- connect errorTagger tagger connectionLostTagger host port' database user password
-
 port exitNode : Float -> Cmd msg
-port dataGenerated : List (String, String, Int) -> Cmd msg
+port formattedNumReposCreatedPerMonthGenerated : List (String, String, Int) -> Cmd msg
+port simpleTwoColumnGenerated: List (String, Int) -> Cmd msg

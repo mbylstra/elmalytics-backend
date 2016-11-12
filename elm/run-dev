@@ -2,4 +2,5 @@ elm make elm-src/Project.elm --output node-src/elm.js
 cd node-src
 node main.js --queryName=formattedNumCommitsPerMonth
 node main.js --queryName=formattedNumReposCreatedPerMonth
+node main.js --queryName=mostStarredRepos
 cd ..

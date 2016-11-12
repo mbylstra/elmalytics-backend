@@ -49,26 +49,30 @@ numCommitsPerMonth =
 
 mostStarredRepos : SimpleSelect
 mostStarredRepos =
-  selectColumns ["github_repository.stars", "github_repository.name"]
+  select
+    [ column "name" |> asColumn "a"
+    , column "stargazers_count" |> asColumn "b"
+    ]
   |> fromTable "github_repository"
-  |> sortByColumn "github_repository.star" Descending
+  |> sortByColumn "stargazers_count" Descending
+  |> limit 20
 
-
--- total repos created
--- Select count repo as total, user
--- From user
--- Join repo
--- Group by rep
--- Order by total desc
 
 totalReposCreatedByUser : SimpleSelect
 totalReposCreatedByUser =
-  selectColumns ["dfghdfgh"]
+  select
+    [ column "github_user.login" |> asColumn "a"
+    , count "github_user.login" |> asColumn "b"
+    ]
   |> from
     [ table "github_repository"
       |> innerJoinTable "github_user"
          on (equalColumns ("github_respository.owner_id", "github_user.id"))
     ]
+  |> groupByColumn "github_user.login"
+  |> sortByColumn "total_repos" Descending
+
+  -- }>
 
 -- basicJoin : SimpleSelect
 -- basicJoin =

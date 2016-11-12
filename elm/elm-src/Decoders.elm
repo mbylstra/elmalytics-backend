@@ -1,26 +1,28 @@
 module Decoders exposing (..)
 
 
-import Json.Decode as Decode exposing (Decoder, object3, (:=), string, int, list, map)
+import Json.Decode as Decode exposing (Decoder, object3, object2, (:=), string, int, list, map)
 import String exposing (toInt)
 import Result
 
 
-type alias TotalReposCreatedRow =
-  { year: String
-  , month : String
-  , totalReposCreated : Int
-  }
+-- type alias TotalReposCreatedRow =
+--   { year: String
+--   , month : String
+--   , totalReposCreated : Int
+--   }
 
 type alias TotalReposCreatedRowTuple =
   ( String, String, Int )
 
-totalReposCreatedRowDecoder : Decoder TotalReposCreatedRow
-totalReposCreatedRowDecoder =
-    object3 TotalReposCreatedRow
-      ("year" := string)
-      ("month" := string)
-      ("total" := int)
+-- totalReposCreatedRowDecoder : Decoder TotalReposCreatedRow
+-- totalReposCreatedRowDecoder =
+--     object3 TotalReposCreatedRow
+--       ("year" := string)
+--       ("month" := string)
+--       ("total" := int)
+
+-- type alias String2Tuple = ( String, String)
 
 totalReposCreatedRowTupleDecoder : Decoder TotalReposCreatedRowTuple
 totalReposCreatedRowTupleDecoder =
@@ -29,9 +31,16 @@ totalReposCreatedRowTupleDecoder =
       ("month" := string)
       ("total" := map (toInt >> Result.withDefault 0) string)
 
-totalReposCreatedDecoder : Decoder (List TotalReposCreatedRowTuple)
-totalReposCreatedDecoder =
-  list totalReposCreatedRowTupleDecoder
+-- totalReposCreatedDecoder : Decoder (List TotalReposCreatedRowTuple)
+-- totalReposCreatedDecoder =
+--   list totalReposCreatedRowTupleDecoder
+
+
+simpleTwoColumnRowDecoder : Decoder (String, Int)
+simpleTwoColumnRowDecoder =
+    object2 (,)
+      ("a" := string)
+      ("b" := int)
 
 -- Remember that a big problem with lists in Elm is they can only contain
 -- one type! So, for each column you need a list, rather than a list for each

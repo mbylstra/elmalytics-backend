@@ -9074,6 +9074,14 @@ var _panosoft$elm_postgres$Postgres$onEffects = F4(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Postgres'] = {pkg: 'panosoft/elm-postgres', init: _panosoft$elm_postgres$Postgres$init, onEffects: _panosoft$elm_postgres$Postgres$onEffects, onSelfMsg: _panosoft$elm_postgres$Postgres$onSelfMsg, tag: 'fx', cmdMap: _panosoft$elm_postgres$Postgres$cmdMap, subMap: _panosoft$elm_postgres$Postgres$subMap};
 
+var _user$project$Decoders$simpleTwoColumnRowDecoder = A3(
+	_elm_lang$core$Json_Decode$object2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'a', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'b', _elm_lang$core$Json_Decode$int));
 var _user$project$Decoders$totalReposCreatedRowTupleDecoder = A4(
 	_elm_lang$core$Json_Decode$object3,
 	F3(
@@ -9094,25 +9102,14 @@ var _user$project$Decoders$totalReposCreatedRowTupleDecoder = A4(
 					_elm_lang$core$String$toInt(_p0));
 			},
 			_elm_lang$core$Json_Decode$string)));
-var _user$project$Decoders$totalReposCreatedDecoder = _elm_lang$core$Json_Decode$list(_user$project$Decoders$totalReposCreatedRowTupleDecoder);
-var _user$project$Decoders$TotalReposCreatedRow = F3(
-	function (a, b, c) {
-		return {year: a, month: b, totalReposCreated: c};
-	});
-var _user$project$Decoders$totalReposCreatedRowDecoder = A4(
-	_elm_lang$core$Json_Decode$object3,
-	_user$project$Decoders$TotalReposCreatedRow,
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'year', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'month', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'total', _elm_lang$core$Json_Decode$int));
 var _user$project$Decoders$NiceOutput = F2(
 	function (a, b) {
 		return {labels: a, data: b};
 	});
 
-var _user$project$SqlBuilder_AST$SimpleSelect = F5(
-	function (a, b, c, d, e) {
-		return {targetList: a, fromClause: b, whereClause: c, groupClause: d, sortClause: e};
+var _user$project$SqlBuilder_AST$SimpleSelect = F7(
+	function (a, b, c, d, e, f, g) {
+		return {targetList: a, fromClause: b, whereClause: c, groupClause: d, sortClause: e, limitClause: f, offsetClause: g};
 	});
 var _user$project$SqlBuilder_AST$TableRefJoinedTable = function (a) {
 	return {ctor: 'TableRefJoinedTable', _0: a};
@@ -9238,25 +9235,47 @@ var _user$project$SqlBuilder_AST$Function = function (a) {
 	return {ctor: 'Function', _0: a};
 };
 
+var _user$project$SqlBuilder_SQLRenderer$renderOffsetClause = function (maybeOffsetClause) {
+	var _p0 = maybeOffsetClause;
+	if (_p0.ctor === 'Nothing') {
+		return '';
+	} else {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			'\nOFFSET ',
+			_elm_lang$core$Basics$toString(_p0._0));
+	}
+};
+var _user$project$SqlBuilder_SQLRenderer$renderLimitClause = function (maybeLimitClause) {
+	var _p1 = maybeLimitClause;
+	if (_p1.ctor === 'Nothing') {
+		return '';
+	} else {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			'\nLIMIT ',
+			_elm_lang$core$Basics$toString(_p1._0));
+	}
+};
 var _user$project$SqlBuilder_SQLRenderer$renderAscDesc = function (ascDesc) {
-	var _p0 = ascDesc;
-	if (_p0.ctor === 'Ascending') {
+	var _p2 = ascDesc;
+	if (_p2.ctor === 'Ascending') {
 		return 'ASC';
 	} else {
 		return 'DESC';
 	}
 };
 var _user$project$SqlBuilder_SQLRenderer$renderAliasClause = function (aliasClause) {
-	var _p1 = aliasClause;
-	if (_p1.ctor === 'AliasClauseAsColId') {
-		return A2(_elm_lang$core$Basics_ops['++'], ' AS ', _p1._0);
+	var _p3 = aliasClause;
+	if (_p3.ctor === 'AliasClauseAsColId') {
+		return A2(_elm_lang$core$Basics_ops['++'], ' AS ', _p3._0);
 	} else {
-		return _p1._0;
+		return _p3._0;
 	}
 };
 var _user$project$SqlBuilder_SQLRenderer$renderJoinType = function (joinType) {
-	var _p2 = joinType;
-	switch (_p2.ctor) {
+	var _p4 = joinType;
+	switch (_p4.ctor) {
 		case 'InnerJoin':
 			return 'INNER JOIN';
 		case 'LeftJoin':
@@ -9274,46 +9293,46 @@ var _user$project$SqlBuilder_SQLRenderer$renderJoinType = function (joinType) {
 	}
 };
 var _user$project$SqlBuilder_SQLRenderer$renderAlias = function (maybeAlias) {
-	var _p3 = maybeAlias;
-	if (_p3.ctor === 'Nothing') {
+	var _p5 = maybeAlias;
+	if (_p5.ctor === 'Nothing') {
 		return '';
 	} else {
-		return _user$project$SqlBuilder_SQLRenderer$renderAliasClause(_p3._0);
+		return _user$project$SqlBuilder_SQLRenderer$renderAliasClause(_p5._0);
 	}
 };
 var _user$project$SqlBuilder_SQLRenderer$renderRelationExpr = function (relationExpr) {
-	var _p4 = relationExpr;
-	return _p4._0;
+	var _p6 = relationExpr;
+	return _p6._0;
 };
 var _user$project$SqlBuilder_SQLRenderer$renderAllColumns = '*';
 var _user$project$SqlBuilder_SQLRenderer$escapeString = function (s) {
 	return s;
 };
 var _user$project$SqlBuilder_SQLRenderer$renderCExpr = function (cExpr) {
-	var _p5 = cExpr;
-	switch (_p5.ctor) {
+	var _p7 = cExpr;
+	switch (_p7.ctor) {
 		case 'ColId':
-			return _p5._0;
+			return _p7._0;
 		case 'AExprConst':
-			var _p6 = _p5._0;
-			if (_p6.ctor === 'Iconst') {
-				return _elm_lang$core$Basics$toString(_p6._0);
+			var _p8 = _p7._0;
+			if (_p8.ctor === 'Iconst') {
+				return _elm_lang$core$Basics$toString(_p8._0);
 			} else {
 				return A2(
 					_elm_lang$core$Basics_ops['++'],
 					'\'',
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						_user$project$SqlBuilder_SQLRenderer$escapeString(_p6._0),
+						_user$project$SqlBuilder_SQLRenderer$escapeString(_p8._0),
 						'\''));
 			}
 		default:
-			var _p7 = _p5._0;
-			if (_p7.ctor === 'Function') {
-				var argsStrings = A2(_elm_lang$core$List$map, _user$project$SqlBuilder_SQLRenderer$renderAExpr, _p7._0._1);
+			var _p9 = _p7._0;
+			if (_p9.ctor === 'Function') {
+				var argsStrings = A2(_elm_lang$core$List$map, _user$project$SqlBuilder_SQLRenderer$renderAExpr, _p9._0._1);
 				return A2(
 					_elm_lang$core$Basics_ops['++'],
-					_p7._0._0,
+					_p9._0._0,
 					A2(
 						_elm_lang$core$Basics_ops['++'],
 						'(',
@@ -9322,83 +9341,83 @@ var _user$project$SqlBuilder_SQLRenderer$renderCExpr = function (cExpr) {
 							A2(_elm_lang$core$String$join, ', ', argsStrings),
 							')')));
 			} else {
-				return A2(_elm_lang$core$Basics_ops['++'], _p7._0, '(*)');
+				return A2(_elm_lang$core$Basics_ops['++'], _p9._0, '(*)');
 			}
 	}
 };
 var _user$project$SqlBuilder_SQLRenderer$renderAExpr = function (aExpr) {
-	var _p8 = aExpr;
-	switch (_p8.ctor) {
+	var _p10 = aExpr;
+	switch (_p10.ctor) {
 		case 'CExpr':
-			return _user$project$SqlBuilder_SQLRenderer$renderCExpr(_p8._0);
+			return _user$project$SqlBuilder_SQLRenderer$renderCExpr(_p10._0);
 		case 'And':
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
-				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._0),
+				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._0),
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					' AND ',
-					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._1)));
+					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._1)));
 		case 'Or':
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
-				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._0),
+				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._0),
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					' OR ',
-					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._1)));
+					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._1)));
 		case 'GreaterThan':
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
-				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._0),
+				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._0),
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					' > ',
-					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._1)));
+					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._1)));
 		case 'LessThan':
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
-				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._0),
+				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._0),
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					' < ',
-					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._1)));
+					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._1)));
 		case 'Equals':
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
-				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._0),
+				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._0),
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					' = ',
-					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._1)));
+					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._1)));
 		case 'GreaterThanEquals':
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
-				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._0),
+				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._0),
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					' >= ',
-					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._1)));
+					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._1)));
 		default:
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
-				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._0),
+				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._0),
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					' <= ',
-					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p8._1)));
+					_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._1)));
 	}
 };
 var _user$project$SqlBuilder_SQLRenderer$renderTargetEl = function (targetEl) {
-	var _p9 = targetEl;
-	switch (_p9.ctor) {
+	var _p11 = targetEl;
+	switch (_p11.ctor) {
 		case 'TargetElAExpr':
-			return _user$project$SqlBuilder_SQLRenderer$renderAExpr(_p9._0);
+			return _user$project$SqlBuilder_SQLRenderer$renderAExpr(_p11._0);
 		case 'TargetElAexprWithAlias':
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
-				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p9._0),
-				A2(_elm_lang$core$Basics_ops['++'], ' AS ', _p9._1));
+				_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p11._0),
+				A2(_elm_lang$core$Basics_ops['++'], ' AS ', _p11._1));
 		default:
 			return _user$project$SqlBuilder_SQLRenderer$renderAllColumns;
 	}
@@ -9410,26 +9429,26 @@ var _user$project$SqlBuilder_SQLRenderer$renderTargetList = function (targetList
 		A2(_elm_lang$core$List$map, _user$project$SqlBuilder_SQLRenderer$renderTargetEl, targetList));
 };
 var _user$project$SqlBuilder_SQLRenderer$renderJoinQual = function (joinQual) {
-	var _p10 = joinQual;
+	var _p12 = joinQual;
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
 		'ON ',
-		_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p10._0));
+		_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p12._0));
 };
 var _user$project$SqlBuilder_SQLRenderer$renderWhereClause = function (maybeWhereClause) {
-	var _p11 = maybeWhereClause;
-	if (_p11.ctor === 'Nothing') {
+	var _p13 = maybeWhereClause;
+	if (_p13.ctor === 'Nothing') {
 		return '';
 	} else {
 		return A2(
 			_elm_lang$core$Basics_ops['++'],
 			'\nWHERE ',
-			_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p11._0));
+			_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p13._0));
 	}
 };
 var _user$project$SqlBuilder_SQLRenderer$renderGroupClause = function (maybeGroupClause) {
-	var _p12 = maybeGroupClause;
-	if (_p12.ctor === 'Nothing') {
+	var _p14 = maybeGroupClause;
+	if (_p14.ctor === 'Nothing') {
 		return '';
 	} else {
 		return A2(
@@ -9438,22 +9457,22 @@ var _user$project$SqlBuilder_SQLRenderer$renderGroupClause = function (maybeGrou
 			A2(
 				_elm_lang$core$String$join,
 				', ',
-				A2(_elm_lang$core$List$map, _user$project$SqlBuilder_SQLRenderer$renderAExpr, _p12._0)));
+				A2(_elm_lang$core$List$map, _user$project$SqlBuilder_SQLRenderer$renderAExpr, _p14._0)));
 	}
 };
-var _user$project$SqlBuilder_SQLRenderer$renderSortBy = function (_p13) {
-	var _p14 = _p13;
+var _user$project$SqlBuilder_SQLRenderer$renderSortBy = function (_p15) {
+	var _p16 = _p15;
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
-		_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p14._0),
+		_user$project$SqlBuilder_SQLRenderer$renderAExpr(_p16._0),
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			' ',
-			_user$project$SqlBuilder_SQLRenderer$renderAscDesc(_p14._1)));
+			_user$project$SqlBuilder_SQLRenderer$renderAscDesc(_p16._1)));
 };
 var _user$project$SqlBuilder_SQLRenderer$renderSortClause = function (maybeSortClause) {
-	var _p15 = maybeSortClause;
-	if (_p15.ctor === 'Nothing') {
+	var _p17 = maybeSortClause;
+	if (_p17.ctor === 'Nothing') {
 		return '';
 	} else {
 		return A2(
@@ -9462,7 +9481,7 @@ var _user$project$SqlBuilder_SQLRenderer$renderSortClause = function (maybeSortC
 			A2(
 				_elm_lang$core$String$join,
 				', ',
-				A2(_elm_lang$core$List$map, _user$project$SqlBuilder_SQLRenderer$renderSortBy, _p15._0)));
+				A2(_elm_lang$core$List$map, _user$project$SqlBuilder_SQLRenderer$renderSortBy, _p17._0)));
 	}
 };
 var _user$project$SqlBuilder_SQLRenderer$renderSimpleSelect = function (simpleSelect) {
@@ -9481,68 +9500,90 @@ var _user$project$SqlBuilder_SQLRenderer$renderSimpleSelect = function (simpleSe
 					A2(
 						_elm_lang$core$Basics_ops['++'],
 						_user$project$SqlBuilder_SQLRenderer$renderGroupClause(simpleSelect.groupClause),
-						_user$project$SqlBuilder_SQLRenderer$renderSortClause(simpleSelect.sortClause))))));
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_user$project$SqlBuilder_SQLRenderer$renderSortClause(simpleSelect.sortClause),
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_user$project$SqlBuilder_SQLRenderer$renderLimitClause(simpleSelect.limitClause),
+								_user$project$SqlBuilder_SQLRenderer$renderOffsetClause(simpleSelect.offsetClause))))))));
 };
 var _user$project$SqlBuilder_SQLRenderer$renderFromClause = function (maybeFromClause) {
-	var _p16 = maybeFromClause;
-	if (_p16.ctor === 'Just') {
+	var _p18 = maybeFromClause;
+	if (_p18.ctor === 'Just') {
 		return A2(
 			_elm_lang$core$Basics_ops['++'],
 			'\nFROM ',
 			A2(
 				_elm_lang$core$String$join,
 				'',
-				A2(_elm_lang$core$List$map, _user$project$SqlBuilder_SQLRenderer$renderTableRef, _p16._0)));
+				A2(_elm_lang$core$List$map, _user$project$SqlBuilder_SQLRenderer$renderTableRef, _p18._0)));
 	} else {
 		return '';
 	}
 };
 var _user$project$SqlBuilder_SQLRenderer$renderTableRef = function (tableRef) {
-	var _p17 = tableRef;
-	switch (_p17.ctor) {
+	var _p19 = tableRef;
+	switch (_p19.ctor) {
 		case 'TableRef':
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
-				_user$project$SqlBuilder_SQLRenderer$renderRelationExpr(_p17._0),
+				_user$project$SqlBuilder_SQLRenderer$renderRelationExpr(_p19._0),
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					' ',
-					_user$project$SqlBuilder_SQLRenderer$renderAlias(_p17._1)));
+					_user$project$SqlBuilder_SQLRenderer$renderAlias(_p19._1)));
 		case 'TableRefSelect':
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
 				'(',
 				A2(
 					_elm_lang$core$Basics_ops['++'],
-					_user$project$SqlBuilder_SQLRenderer$renderSimpleSelect(_p17._0),
+					_user$project$SqlBuilder_SQLRenderer$renderSimpleSelect(_p19._0),
 					A2(
 						_elm_lang$core$Basics_ops['++'],
 						'\n) ',
-						_user$project$SqlBuilder_SQLRenderer$renderAliasClause(_p17._1))));
+						_user$project$SqlBuilder_SQLRenderer$renderAliasClause(_p19._1))));
 		default:
-			var _p18 = _p17._0;
+			var _p20 = _p19._0;
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
-				_user$project$SqlBuilder_SQLRenderer$renderTableRef(_p18._0),
+				_user$project$SqlBuilder_SQLRenderer$renderTableRef(_p20._0),
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					' ',
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						_user$project$SqlBuilder_SQLRenderer$renderJoinType(_p18._1),
+						_user$project$SqlBuilder_SQLRenderer$renderJoinType(_p20._1),
 						A2(
 							_elm_lang$core$Basics_ops['++'],
 							' ',
 							A2(
 								_elm_lang$core$Basics_ops['++'],
-								_user$project$SqlBuilder_SQLRenderer$renderTableRef(_p18._2),
+								_user$project$SqlBuilder_SQLRenderer$renderTableRef(_p20._2),
 								A2(
 									_elm_lang$core$Basics_ops['++'],
 									' ',
-									_user$project$SqlBuilder_SQLRenderer$renderJoinQual(_p18._3)))))));
+									_user$project$SqlBuilder_SQLRenderer$renderJoinQual(_p20._3)))))));
 	}
 };
 
+var _user$project$SqlBuilder$offset = F2(
+	function (n, currentSelect) {
+		return _elm_lang$core$Native_Utils.update(
+			currentSelect,
+			{
+				offsetClause: _elm_lang$core$Maybe$Just(n)
+			});
+	});
+var _user$project$SqlBuilder$limit = F2(
+	function (n, currentSelect) {
+		return _elm_lang$core$Native_Utils.update(
+			currentSelect,
+			{
+				limitClause: _elm_lang$core$Maybe$Just(n)
+			});
+	});
 var _user$project$SqlBuilder$sortBy = F2(
 	function (items, currentSelect) {
 		return _elm_lang$core$Native_Utils.update(
@@ -9665,16 +9706,16 @@ var _user$project$SqlBuilder$asTable = F2(
 				return _elm_lang$core$Native_Utils.crashCase(
 					'SqlBuilder',
 					{
-						start: {line: 169, column: 3},
-						end: {line: 175, column: 85}
+						start: {line: 171, column: 3},
+						end: {line: 177, column: 85}
 					},
 					_p4)('Sorry, asTable is not yet supported for type TableRefSelect');
 			default:
 				return _elm_lang$core$Native_Utils.crashCase(
 					'SqlBuilder',
 					{
-						start: {line: 169, column: 3},
-						end: {line: 175, column: 85}
+						start: {line: 171, column: 3},
+						end: {line: 177, column: 85}
 					},
 					_p4)('Sorry, asTable is not yet supported for type TableRefJoinedTable');
 		}
@@ -9771,8 +9812,8 @@ var _user$project$SqlBuilder$withPrecision = F2(
 				return _elm_lang$core$Native_Utils.crashCase(
 					'SqlBuilder',
 					{
-						start: {line: 101, column: 5},
-						end: {line: 107, column: 104}
+						start: {line: 103, column: 5},
+						end: {line: 109, column: 104}
 					},
 					_p7)('Sorry, but you can\'t use the withPrecision function with an AllColumns expression');
 		}
@@ -9803,8 +9844,8 @@ var _user$project$SqlBuilder$formatDate = F2(
 				return _elm_lang$core$Native_Utils.crashCase(
 					'SqlBuilder',
 					{
-						start: {line: 122, column: 5},
-						end: {line: 128, column: 101}
+						start: {line: 124, column: 5},
+						end: {line: 130, column: 101}
 					},
 					_p9)('Sorry, but you can\'t use the formatDate function with an AllColumns expression');
 		}
@@ -9821,8 +9862,8 @@ var _user$project$SqlBuilder$asColumn = F2(
 				return _elm_lang$core$Native_Utils.crashCase(
 					'SqlBuilder',
 					{
-						start: {line: 58, column: 3},
-						end: {line: 64, column: 96}
+						start: {line: 60, column: 3},
+						end: {line: 66, column: 96}
 					},
 					_p11)('Sorry, but you can\'t use the as_ function with an AllColumns target element');
 		}
@@ -9863,7 +9904,7 @@ var _user$project$SqlBuilder$column = function (name) {
 			_user$project$SqlBuilder_AST$ColId(name)));
 };
 var _user$project$SqlBuilder$select = function (targetList) {
-	return {targetList: targetList, fromClause: _elm_lang$core$Maybe$Nothing, whereClause: _elm_lang$core$Maybe$Nothing, groupClause: _elm_lang$core$Maybe$Nothing, sortClause: _elm_lang$core$Maybe$Nothing};
+	return {targetList: targetList, fromClause: _elm_lang$core$Maybe$Nothing, whereClause: _elm_lang$core$Maybe$Nothing, groupClause: _elm_lang$core$Maybe$Nothing, sortClause: _elm_lang$core$Maybe$Nothing, limitClause: _elm_lang$core$Maybe$Nothing, offsetClause: _elm_lang$core$Maybe$Nothing};
 };
 var _user$project$SqlBuilder$selectColumns = function (columnNames) {
 	var targetList = A2(
@@ -9888,6 +9929,59 @@ var _user$project$SqlBuilder$Second = {ctor: 'Second'};
 var _user$project$SqlBuilder$Milliseconds = {ctor: 'Milliseconds'};
 var _user$project$SqlBuilder$Microseconds = {ctor: 'Microseconds'};
 
+var _user$project$Queries$totalReposCreatedByUser = A3(
+	_user$project$SqlBuilder$sortByColumn,
+	'total_repos',
+	_user$project$SqlBuilder_AST$Descending,
+	A2(
+		_user$project$SqlBuilder$groupByColumn,
+		'github_user.login',
+		A2(
+			_user$project$SqlBuilder$from,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A4(
+					_user$project$SqlBuilder$innerJoinTable,
+					'github_user',
+					_user$project$SqlBuilder$on,
+					_user$project$SqlBuilder$equalColumns(
+						{ctor: '_Tuple2', _0: 'github_respository.owner_id', _1: 'github_user.id'}),
+					_user$project$SqlBuilder$table('github_repository'))
+				]),
+			_user$project$SqlBuilder$select(
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_user$project$SqlBuilder$asColumn,
+						'a',
+						_user$project$SqlBuilder$column('github_user.login')),
+						A2(
+						_user$project$SqlBuilder$asColumn,
+						'b',
+						_user$project$SqlBuilder$count('github_user.login'))
+					])))));
+var _user$project$Queries$mostStarredRepos = A2(
+	_user$project$SqlBuilder$limit,
+	20,
+	A3(
+		_user$project$SqlBuilder$sortByColumn,
+		'stargazers_count',
+		_user$project$SqlBuilder_AST$Descending,
+		A2(
+			_user$project$SqlBuilder$fromTable,
+			'github_repository',
+			_user$project$SqlBuilder$select(
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_user$project$SqlBuilder$asColumn,
+						'a',
+						_user$project$SqlBuilder$column('name')),
+						A2(
+						_user$project$SqlBuilder$asColumn,
+						'b',
+						_user$project$SqlBuilder$column('stargazers_count'))
+					])))));
 var _user$project$Queries$numCommitsPerMonth = A3(
 	_user$project$SqlBuilder$sortByColumn,
 	'date_month',
@@ -9996,21 +10090,42 @@ var _user$project$Project$view = function (model) {
 		_elm_lang$core$Native_List.fromArray(
 			[]));
 };
+var _user$project$Project$filterDecodeErrors = function (rows) {
+	return A2(
+		_elm_lang$core$List$map,
+		function (rowResult) {
+			var _p0 = rowResult;
+			if (_p0.ctor === 'Ok') {
+				return _p0._0;
+			} else {
+				return _elm_lang$core$Native_Utils.crashCase(
+					'Project',
+					{
+						start: {line: 147, column: 9},
+						end: {line: 149, column: 37}
+					},
+					_p0)(_p0._0);
+			}
+		},
+		rows);
+};
 var _user$project$Project$queryNameToSqlSelect = function (queryName) {
-	var _p0 = queryName;
-	switch (_p0) {
+	var _p2 = queryName;
+	switch (_p2) {
 		case 'formattedNumReposCreatedPerMonth':
 			return _user$project$Queries$formattedNumReposCreatedPerMonth;
 		case 'formattedNumCommitsPerMonth':
 			return _user$project$Queries$formattedNumCommitsPerMonth;
+		case 'mostStarredRepos':
+			return _user$project$Queries$mostStarredRepos;
 		default:
 			return _elm_lang$core$Native_Utils.crashCase(
 				'Project',
 				{
-					start: {line: 63, column: 3},
-					end: {line: 69, column: 64}
+					start: {line: 76, column: 3},
+					end: {line: 84, column: 64}
 				},
-				_p0)(
+				_p2)(
 				A2(_elm_lang$core$Basics_ops['++'], 'There is no SQL query named ', queryName));
 	}
 };
@@ -10019,20 +10134,62 @@ var _user$project$Project$exitNode = _elm_lang$core$Native_Platform.outgoingPort
 	function (v) {
 		return v;
 	});
-var _user$project$Project$dataGenerated = _elm_lang$core$Native_Platform.outgoingPort(
-	'dataGenerated',
+var _user$project$Project$formattedNumReposCreatedPerMonthGenerated = _elm_lang$core$Native_Platform.outgoingPort(
+	'formattedNumReposCreatedPerMonthGenerated',
 	function (v) {
 		return _elm_lang$core$Native_List.toArray(v).map(
 			function (v) {
 				return [v._0, v._1, v._2];
 			});
 	});
+var _user$project$Project$handleTotalReposCreated = F2(
+	function (model, results) {
+		return A2(
+			_elm_lang$core$Platform_Cmd_ops['!'],
+			model,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_user$project$Project$formattedNumReposCreatedPerMonthGenerated(
+					_user$project$Project$filterDecodeErrors(
+						A2(
+							_elm_lang$core$List$map,
+							_elm_lang$core$Json_Decode$decodeString(_user$project$Decoders$totalReposCreatedRowTupleDecoder),
+							results)))
+				]));
+	});
+var _user$project$Project$simpleTwoColumnGenerated = _elm_lang$core$Native_Platform.outgoingPort(
+	'simpleTwoColumnGenerated',
+	function (v) {
+		return _elm_lang$core$Native_List.toArray(v).map(
+			function (v) {
+				return [v._0, v._1];
+			});
+	});
+var _user$project$Project$handleSimpleTwoColumn = F2(
+	function (model, results) {
+		return A2(
+			_elm_lang$core$Platform_Cmd_ops['!'],
+			model,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_user$project$Project$simpleTwoColumnGenerated(
+					_user$project$Project$filterDecodeErrors(
+						A2(
+							_elm_lang$core$List$map,
+							_elm_lang$core$Json_Decode$decodeString(_user$project$Decoders$simpleTwoColumnRowDecoder),
+							results)))
+				]));
+	});
 var _user$project$Project$Flags = F6(
 	function (a, b, c, d, e, f) {
 		return {host: a, port_: b, database: c, user: d, password: e, queryName: f};
 	});
-var _user$project$Project$Query = function (a) {
-	return {ctor: 'Query', _0: a};
+var _user$project$Project$Query = F2(
+	function (a, b) {
+		return {query: a, decoder: b};
+	});
+var _user$project$Project$QueryResponse = function (a) {
+	return {ctor: 'QueryResponse', _0: a};
 };
 var _user$project$Project$Disconnect = function (a) {
 	return {ctor: 'Disconnect', _0: a};
@@ -10045,8 +10202,8 @@ var _user$project$Project$PostgresError = function (a) {
 };
 var _user$project$Project$update = F2(
 	function (msg, model) {
-		var _p2 = msg;
-		switch (_p2.ctor) {
+		var _p4 = msg;
+		switch (_p4.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10054,12 +10211,12 @@ var _user$project$Project$update = F2(
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			case 'Connect':
-				var _p3 = _p2._0;
+				var _p5 = _p4._0;
 				var queryName = model;
 				var select = _user$project$Project$queryNameToSqlSelect(queryName);
 				var queryString = _user$project$SqlBuilder_SQLRenderer$renderSimpleSelect(select);
-				var queryCmd = A5(_panosoft$elm_postgres$Postgres$query, _user$project$Project$PostgresError, _user$project$Project$Query, _p3, queryString, 1000);
-				var l = A2(_elm_lang$core$Debug$log, 'Connect', _p3);
+				var queryCmd = A5(_panosoft$elm_postgres$Postgres$query, _user$project$Project$PostgresError, _user$project$Project$QueryResponse, _p5, queryString, 1000);
+				var l = A2(_elm_lang$core$Debug$log, 'Connect', _p5);
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
@@ -10069,7 +10226,7 @@ var _user$project$Project$update = F2(
 				var l = A2(
 					_elm_lang$core$Debug$log,
 					'ConnectError',
-					{ctor: '_Tuple2', _0: _p2._0._0, _1: _p2._0._1});
+					{ctor: '_Tuple2', _0: _p4._0._0, _1: _p4._0._1});
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
@@ -10079,48 +10236,39 @@ var _user$project$Project$update = F2(
 				var l = A2(
 					_elm_lang$core$Debug$log,
 					'ConnectionLostError',
-					{ctor: '_Tuple2', _0: _p2._0._0, _1: _p2._0._1});
+					{ctor: '_Tuple2', _0: _p4._0._0, _1: _p4._0._1});
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			case 'Disconnect':
-				var l = A2(_elm_lang$core$Debug$log, 'Disconnect', _p2._0);
+				var l = A2(_elm_lang$core$Debug$log, 'Disconnect', _p4._0);
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			default:
-				var decodedResults = A2(
-					_elm_lang$core$List$map,
-					function (rowResult) {
-						var _p4 = rowResult;
-						if (_p4.ctor === 'Ok') {
-							return _p4._0;
-						} else {
-							return _elm_lang$core$Native_Utils.crashCase(
-								'Project',
-								{
-									start: {line: 125, column: 21},
-									end: {line: 127, column: 49}
-								},
-								_p4)(_p4._0);
-						}
-					},
-					A2(
-						_elm_lang$core$List$map,
-						_elm_lang$core$Json_Decode$decodeString(_user$project$Decoders$totalReposCreatedRowTupleDecoder),
-						_p2._0._1));
-				var l = A2(_elm_lang$core$Debug$log, 'Query results fetched', true);
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_user$project$Project$dataGenerated(decodedResults)
-						]));
+				var _p8 = _p4._0._1;
+				var _p6 = model;
+				switch (_p6) {
+					case 'formattedNumReposCreatedPerMonth':
+						return A2(_user$project$Project$handleTotalReposCreated, model, _p8);
+					case 'formattedNumCommitsPerMonth':
+						return A2(_user$project$Project$handleTotalReposCreated, model, _p8);
+					case 'mostStarredRepos':
+						return A2(_user$project$Project$handleSimpleTwoColumn, model, _p8);
+					default:
+						return _elm_lang$core$Native_Utils.crashCase(
+							'Project',
+							{
+								start: {line: 131, column: 7},
+								end: {line: 139, column: 51}
+							},
+							_p6)(
+							A2(_elm_lang$core$Basics_ops['++'], 'no query named ', model));
+				}
 		}
 	});
 var _user$project$Project$Connect = function (a) {
