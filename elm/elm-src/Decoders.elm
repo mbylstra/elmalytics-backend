@@ -43,19 +43,26 @@ mostStarredReposRowDecoder =
       ("user_login" := string)
       ("num_stars" := int)
 
+
+mostReposCreatedRowDecoder : Decoder (String, Int)
+mostReposCreatedRowDecoder =
+    object2 (,)
+      ("user_login" := string)
+      ("total_repos" := map (toInt >> Result.withDefault 0) string)
+
 -- Remember that a big problem with lists in Elm is they can only contain
 -- one type! So, for each column you need a list, rather than a list for each
 -- row.
 
 -- Let's not bother with this, obtaining the labels is too much of a pain
-type alias NiceOutput =
-  { labels : List String
-  , data : List (String, String, Int)
-    -- { year : List String
-    -- , month : List String
-    -- , totalReposCreated : List Int
-    -- }
-  }
+-- type alias NiceOutput =
+--   { labels : List String
+--   , data : List (String, String, Int)
+--     -- { year : List String
+--     -- , month : List String
+--     -- , totalReposCreated : List Int
+--     -- }
+--   }
 
 
 -- The problem with this, is you can't generalise it!

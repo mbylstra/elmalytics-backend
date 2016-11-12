@@ -63,27 +63,17 @@ mostStarredRepos =
   |> limit 50
 
 
-totalReposCreatedByUser : SimpleSelect
-totalReposCreatedByUser =
+mostReposCreated : SimpleSelect
+mostReposCreated =
   select
-    [ column "github_user.login" |> asColumn "a"
-    , count "github_user.login" |> asColumn "b"
+    [ column "github_user.login" |> asColumn "user_login"
+    , count "github_user.login" |> asColumn "total_repos"
     ]
   |> from
     [ table "github_repository"
       |> innerJoinTable "github_user"
-         on (equalColumns ("github_respository.owner_id", "github_user.id"))
+         on (equalColumns ("github_repository.owner_id", "github_user.id"))
     ]
   |> groupByColumn "github_user.login"
   |> sortByColumn "total_repos" Descending
-
-  -- }>
-
--- basicJoin : SimpleSelect
--- basicJoin =
---   selectColumns ["book.name", "author.name"]
---   |> from
---     [ table "book"
---       |> innerJoinTable "author"
---          on (equalColumns ("book.author_id", "author.id"))
-    -- ]
+  |> limit 50

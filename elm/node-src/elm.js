@@ -9086,6 +9086,25 @@ var _panosoft$elm_postgres$Postgres$onEffects = F4(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Postgres'] = {pkg: 'panosoft/elm-postgres', init: _panosoft$elm_postgres$Postgres$init, onEffects: _panosoft$elm_postgres$Postgres$onEffects, onSelfMsg: _panosoft$elm_postgres$Postgres$onSelfMsg, tag: 'fx', cmdMap: _panosoft$elm_postgres$Postgres$cmdMap, subMap: _panosoft$elm_postgres$Postgres$subMap};
 
+var _user$project$Decoders$mostReposCreatedRowDecoder = A3(
+	_elm_lang$core$Json_Decode$object2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'user_login', _elm_lang$core$Json_Decode$string),
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'total_repos',
+		A2(
+			_elm_lang$core$Json_Decode$map,
+			function (_p0) {
+				return A2(
+					_elm_lang$core$Result$withDefault,
+					0,
+					_elm_lang$core$String$toInt(_p0));
+			},
+			_elm_lang$core$Json_Decode$string)));
 var _user$project$Decoders$mostStarredReposRowDecoder = A4(
 	_elm_lang$core$Json_Decode$object3,
 	F3(
@@ -9108,17 +9127,13 @@ var _user$project$Decoders$totalReposCreatedRowTupleDecoder = A4(
 		'total',
 		A2(
 			_elm_lang$core$Json_Decode$map,
-			function (_p0) {
+			function (_p1) {
 				return A2(
 					_elm_lang$core$Result$withDefault,
 					0,
-					_elm_lang$core$String$toInt(_p0));
+					_elm_lang$core$String$toInt(_p1));
 			},
 			_elm_lang$core$Json_Decode$string)));
-var _user$project$Decoders$NiceOutput = F2(
-	function (a, b) {
-		return {labels: a, data: b};
-	});
 
 var _user$project$SqlBuilder_AST$SimpleSelect = F7(
 	function (a, b, c, d, e, f, g) {
@@ -9942,37 +9957,40 @@ var _user$project$SqlBuilder$Second = {ctor: 'Second'};
 var _user$project$SqlBuilder$Milliseconds = {ctor: 'Milliseconds'};
 var _user$project$SqlBuilder$Microseconds = {ctor: 'Microseconds'};
 
-var _user$project$Queries$totalReposCreatedByUser = A3(
-	_user$project$SqlBuilder$sortByColumn,
-	'total_repos',
-	_user$project$SqlBuilder_AST$Descending,
-	A2(
-		_user$project$SqlBuilder$groupByColumn,
-		'github_user.login',
+var _user$project$Queries$mostReposCreated = A2(
+	_user$project$SqlBuilder$limit,
+	50,
+	A3(
+		_user$project$SqlBuilder$sortByColumn,
+		'total_repos',
+		_user$project$SqlBuilder_AST$Descending,
 		A2(
-			_user$project$SqlBuilder$from,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A4(
-					_user$project$SqlBuilder$innerJoinTable,
-					'github_user',
-					_user$project$SqlBuilder$on,
-					_user$project$SqlBuilder$equalColumns(
-						{ctor: '_Tuple2', _0: 'github_respository.owner_id', _1: 'github_user.id'}),
-					_user$project$SqlBuilder$table('github_repository'))
-				]),
-			_user$project$SqlBuilder$select(
+			_user$project$SqlBuilder$groupByColumn,
+			'github_user.login',
+			A2(
+				_user$project$SqlBuilder$from,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						A2(
-						_user$project$SqlBuilder$asColumn,
-						'a',
-						_user$project$SqlBuilder$column('github_user.login')),
-						A2(
-						_user$project$SqlBuilder$asColumn,
-						'b',
-						_user$project$SqlBuilder$count('github_user.login'))
-					])))));
+						A4(
+						_user$project$SqlBuilder$innerJoinTable,
+						'github_user',
+						_user$project$SqlBuilder$on,
+						_user$project$SqlBuilder$equalColumns(
+							{ctor: '_Tuple2', _0: 'github_repository.owner_id', _1: 'github_user.id'}),
+						_user$project$SqlBuilder$table('github_repository'))
+					]),
+				_user$project$SqlBuilder$select(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_user$project$SqlBuilder$asColumn,
+							'user_login',
+							_user$project$SqlBuilder$column('github_user.login')),
+							A2(
+							_user$project$SqlBuilder$asColumn,
+							'total_repos',
+							_user$project$SqlBuilder$count('github_user.login'))
+						]))))));
 var _user$project$Queries$mostStarredRepos = A2(
 	_user$project$SqlBuilder$limit,
 	50,
@@ -10127,8 +10145,8 @@ var _user$project$Project$filterDecodeErrors = function (rows) {
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Project',
 					{
-						start: {line: 147, column: 9},
-						end: {line: 149, column: 37}
+						start: {line: 153, column: 9},
+						end: {line: 155, column: 37}
 					},
 					_p0)(_p0._0);
 			}
@@ -10144,12 +10162,14 @@ var _user$project$Project$queryNameToSqlSelect = function (queryName) {
 			return _user$project$Queries$formattedNumCommitsPerMonth;
 		case 'mostStarredRepos':
 			return _user$project$Queries$mostStarredRepos;
+		case 'mostReposCreated':
+			return _user$project$Queries$mostReposCreated;
 		default:
 			return _elm_lang$core$Native_Utils.crashCase(
 				'Project',
 				{
-					start: {line: 76, column: 3},
-					end: {line: 84, column: 64}
+					start: {line: 78, column: 3},
+					end: {line: 88, column: 64}
 				},
 				_p2)(
 				A2(_elm_lang$core$Basics_ops['++'], 'There is no SQL query named ', queryName));
@@ -10203,6 +10223,29 @@ var _user$project$Project$handleMostStarredRepos = F2(
 						A2(
 							_elm_lang$core$List$map,
 							_elm_lang$core$Json_Decode$decodeString(_user$project$Decoders$mostStarredReposRowDecoder),
+							results)))
+				]));
+	});
+var _user$project$Project$mostReposCreatedGenerated = _elm_lang$core$Native_Platform.outgoingPort(
+	'mostReposCreatedGenerated',
+	function (v) {
+		return _elm_lang$core$Native_List.toArray(v).map(
+			function (v) {
+				return [v._0, v._1];
+			});
+	});
+var _user$project$Project$handleMostReposCreated = F2(
+	function (model, results) {
+		return A2(
+			_elm_lang$core$Platform_Cmd_ops['!'],
+			model,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_user$project$Project$mostReposCreatedGenerated(
+					_user$project$Project$filterDecodeErrors(
+						A2(
+							_elm_lang$core$List$map,
+							_elm_lang$core$Json_Decode$decodeString(_user$project$Decoders$mostReposCreatedRowDecoder),
 							results)))
 				]));
 	});
@@ -10263,8 +10306,8 @@ var _user$project$Project$update = F2(
 					_elm_lang$core$Native_Utils.crash(
 						'Project',
 						{
-							start: {line: 119, column: 17},
-							end: {line: 119, column: 28}
+							start: {line: 123, column: 17},
+							end: {line: 123, column: 28}
 						}),
 					'PostgresError',
 					{ctor: '_Tuple2', _0: _p4._0._0, _1: _p4._0._1});
@@ -10290,12 +10333,14 @@ var _user$project$Project$update = F2(
 						return A2(_user$project$Project$handleTotalReposCreated, model, _p8);
 					case 'mostStarredRepos':
 						return A2(_user$project$Project$handleMostStarredRepos, model, _p8);
+					case 'mostReposCreated':
+						return A2(_user$project$Project$handleMostReposCreated, model, _p8);
 					default:
 						return _elm_lang$core$Native_Utils.crashCase(
 							'Project',
 							{
-								start: {line: 131, column: 7},
-								end: {line: 139, column: 51}
+								start: {line: 135, column: 7},
+								end: {line: 145, column: 51}
 							},
 							_p6)(
 							A2(_elm_lang$core$Basics_ops['++'], 'no query named ', model));

@@ -3,4 +3,5 @@ cd node-src
 node main.js --queryName=formattedNumCommitsPerMonth
 node main.js --queryName=formattedNumReposCreatedPerMonth
 node main.js --queryName=mostStarredRepos
+node main.js --queryName=mostReposCreated
 cd ..

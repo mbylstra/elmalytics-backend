@@ -49,6 +49,10 @@ ports.mostStarredReposGenerated.subscribe( results => {
   writeResults(results);
 });
 
+ports.mostReposCreatedGenerated.subscribe( results => {
+  writeResults(results);
+});
+
 process.on('uncaughtException', err => {
 	console.log(`Uncaught exception:\n`, err);
 	process.exit(1);
