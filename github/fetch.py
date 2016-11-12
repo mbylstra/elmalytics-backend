@@ -65,7 +65,7 @@ def rate_limited_github_get(url, params, search_api=False):
             print 'hit rate limit. sleeping for {} minutes'.format(sleep_time / 60.0)
         time.sleep(sleep_time)
     response = requests.get(url, params)
-    if response.status_code == 400:
+    if response.status_code == 404:
         raise Exception404()
     while response.status_code != 200:
         print response.headers
