@@ -1,0 +1,3 @@
+manage.py linguist-vendored=true
+linguist.rb linguist-vendored=true
+elm.js linguist-vendored=true
